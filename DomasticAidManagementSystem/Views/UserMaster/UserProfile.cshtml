@@ -1,0 +1,162 @@
+﻿@model DomasticAidManagementSystem.LoginRequest
+@{
+    Layout = "~/Views/Shared/_user_layouy.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile View</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .profile-container {
+            top:5%;
+            width: 500px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            position: relative;
+        }
+
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #007BFF;
+            transition: transform 0.3s;
+        }
+
+            .profile-pic:hover {
+                transform: scale(1.1);
+            }
+
+        .username {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .email {
+            font-size: 16px;
+            color: gray;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background 0.3s;
+        }
+
+            .btn:hover {
+                background: #0056b3;
+            }
+
+        .tab-container {
+            margin-top: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            cursor: pointer;
+            padding: 10px 20px;
+            background: #dcdcdc;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+            .tab.active {
+                background: #007BFF;
+                color: white;
+            }
+
+        .tab-content {
+            display: none;
+        }
+
+            .tab-content.active {
+                display: block;
+            }
+
+        .user {
+            margin: 0 auto 20px;
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+    <br />
+    <br />
+    <div class="profile-container">
+        <img class="user" src="https://i.ibb.co/yVGxFPR/2.png" alt="User Icon" height="100px" width="100px">
+        <div class="username">John Doe</div>
+        <div class="email">john.doe@example.com</div>
+
+        <div class="buttons">
+            <button class="btn" id="viewOrders">Order History</button>
+            <button class="btn" id="generateBill">Generate Bill</button>
+        </div>
+
+        <div class="tab-container" id="orderTabs">
+            <div class="tabs">
+                <div class="tab active" data-tab="details">Order Details</div>
+                <div class="tab" data-tab="history">Order History</div>
+            </div>
+            <div class="tab-content active" id="details">📦 Your current order details will be displayed here.</div>
+            <div class="tab-content" id="history">🧾 Your past order history will be displayed here.</div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $("#viewOrders").click(function(){
+                $("#orderTabs").fadeToggle();
+            });
+
+            $(".tab").click(function(){
+                $(".tab").removeClass("active");
+                $(this).addClass("active");
+
+                $(".tab-content").removeClass("active");
+                $("#" + $(this).data("tab")).addClass("active");
+            });
+        });
+    </script>
+</body>
+</html>
