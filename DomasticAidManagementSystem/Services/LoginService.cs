@@ -1,4 +1,6 @@
-﻿namespace DomasticAidManagementSystem
+﻿using DomasticAidManagementSystem.Domain.Entities;
+
+namespace DomasticAidManagementSystem
 {
     public class LoginService : ILoingService
     {
@@ -9,28 +11,27 @@
             _login = login;
         }
 
-        public async Task<LoginRequest> CheckLogin(LoginRequest request)
+        public async Task<User> CheckLogin(User user)
         {
-            LoginRequest loginRequest = new LoginRequest();
-            loginRequest= await _login.CheckLogin(request);
-            return  loginRequest;
+            var response= await _login.CheckLogin(user);
+            return response;
         }
 
-        public async Task<LoginRequest> RegisterUser(LoginRequest request)
+        public async Task<User> RegisterUser(User request)
         {
-            LoginRequest loginRequest = new LoginRequest();
-            loginRequest = await _login.RegisterNewUser(request);
-            return loginRequest;
+            var response = await _login.RegisterNewUser(request);
+            return response;
         }
 
-        public Task<bool> ResetPassword(LoginRequest request)
+        public Task<bool> ResetPassword(User request)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> VerifyEmailExist(string email)
+        public async Task<bool> VerifyEmailExist(string email)
         {
-            throw new NotImplementedException();
+            var response = await _login.VerifyEmailExist(email);
+            return response;
         }
     }
 }

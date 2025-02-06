@@ -1,14 +1,16 @@
-﻿namespace  DomasticAidManagementSystem
+﻿using DomasticAidManagementSystem.Domain.Entities;
+
+namespace  DomasticAidManagementSystem
 {
     public interface ILoingService
     {
-        public Task<LoginRequest> CheckLogin(LoginRequest request);
+        public Task<User> CheckLogin(User user);
 
-        public Task<LoginRequest> RegisterUser(LoginRequest request);
+        public Task<User> RegisterUser(User request);
 
         public Task<bool> VerifyEmailExist(string email);
 
-        public Task<bool> ResetPassword(LoginRequest request);
+        public Task<bool> ResetPassword(User request);
 
     }
 }

@@ -1,4 +1,9 @@
-﻿using DomasticAidManagementSystem;
+﻿using DomasticAidManagementSystem.Repositories.DBConfig.Admin;
+using DomasticAidManagementSystem.Repositories.DBConfig.BookingDetails;
+using DomasticAidManagementSystem.Repositories.DBConfig.Bookings;
+using DomasticAidManagementSystem.Repositories.DBConfig.Login;
+using DomasticAidManagementSystem.Repositories.DBConfig.Pricing;
+using DomasticAidManagementSystem.Repositories.DBConfig.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace IIITS.EFCore.Repositories
@@ -11,16 +16,12 @@ namespace IIITS.EFCore.Repositories
 		private string _connectionStringWorkFlow;
 
 		public LMSMasterServiceDBContext(IConfiguration config)
-		{
-		
+		{		
 				_configuration=config ;
 				//TODO
 				_connectionString = _configuration["ConnectionStrings:SqlServerConnString"];
                _connectionStringNpg = _configuration["ConnectionStrings:PostgreSqlConnString"];
-
-
         }
-
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -34,12 +35,19 @@ namespace IIITS.EFCore.Repositories
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			string schemaNme = _configuration["APIDBContext:SchemaName"];
-            modelBuilder.ApplyConfiguration(new LoginConfiguration(schemaNme));
-            modelBuilder.ApplyConfiguration(new CategoryTableConfiguration(schemaNme));
-            modelBuilder.ApplyConfiguration(new ExpenseMasterTableConfiguration(schemaNme));
-            modelBuilder.ApplyConfiguration(new FamilyConfiguration(schemaNme));
+            modelBuilder.ApplyConfiguration(new UserTableConfiguration(schemaNme));
+            modelBuilder.ApplyConfiguration(new ServicesTableConfiguration(schemaNme));
+            modelBuilder.ApplyConfiguration(new PricingTableConfiguration(schemaNme));
+            modelBuilder.ApplyConfiguration(new BookingsTableConfiguration(schemaNme));
+            modelBuilder.ApplyConfiguration(new BookingDetailsTableConfiguration(schemaNme));
+            modelBuilder.ApplyConfiguration(new AdminsTableConfiguration(schemaNme));
             base.OnModelCreating(modelBuilder);
 		}
-        public DbSet<LoginDBTypes> LoginDetails { get; set; }
+        public DbSet<UsersTableDBType> Users { get; set; }
+        public DbSet<ServicesTableDBType> Services { get; set; }
+        public DbSet<PricingTableDBType> Pricing { get; set; }
+        public DbSet<BookingsTableDBType> Bookings { get; set; }
+        public DbSet<BookingDetailsTableDBType> BookingDetails { get; set; }
+        public DbSet<AdminsTableDBType> Admins { get; set; }
     }
 }

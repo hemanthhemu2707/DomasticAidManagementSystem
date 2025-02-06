@@ -15,31 +15,22 @@ namespace DomasticAidManagementSystem
         [HttpGet]
         public async Task<IActionResult> UserDashBoard(string UserId)
         {
-            //if (int.TryParse(UserId, out int numericUserId))
-            //{
-            //    UserId = numericUserId.ToString();
-            //}
-            //else if (UserId != null)
-            //{
-            //    UserId = EncryptionHelper.UrlDecrypt(UserId);
-            //}
+            if (int.TryParse(UserId, out int numericUserId))
+            {
+                UserId = numericUserId.ToString();
+            }
+            else if (UserId != null)
+            {
+                UserId = UserId== "undefined" ? HttpContext.Session.GetString("UserId") : EncryptionHelper.UrlDecrypt(UserId);
+            }
 
-            //else
-            //{
-            //    UserId = HttpContext.Session.GetString("UserId");
-            //}
-            //UserDashBoard obj = new UserDashBoard();
-            //obj.UserID = Convert.ToInt32( UserId);
-            //if (UserId != null)
-            //{
-            //    var res = await _userMasterService.GetDashboardDetails(obj.UserID);
-            //    HttpContext.Session.SetString("UserName", res.UserName.ToString());
-            //    HttpContext.Session.SetString("UserId", res.UserID.ToString());
-            //    HttpContext.Session.SetString("IsAdmin", res.AdminStatus.ToString());
-            //    return View(res);
-
-            //}
-            return View(new UserDashBoard());
+            else
+            {
+                UserId = HttpContext.Session.GetString("UserId");
+            }
+            UserDashBoard obj = new UserDashBoard();
+                //var res = await _userMasterService.GetDashboardDetails(obj.UserID);
+                return View(obj);
         }
 
         [HttpGet]
@@ -66,6 +57,31 @@ namespace DomasticAidManagementSystem
 
             return View();
         }
+
+        
+        
+        [HttpGet]
+        public async Task<IActionResult> HomeCleaning()
+        {
+
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ApartmentCleaning()
+        {
+
+            return View();
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> IndustriesCleaning()
+        {
+
+            return View();
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> AddExpence([FromBody] AddExpence model)

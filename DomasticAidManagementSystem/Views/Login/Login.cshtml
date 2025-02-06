@@ -1,4 +1,4 @@
-﻿@model DomasticAidManagementSystem.LoginRequest
+﻿@model DomasticAidManagementSystem.Domain.Entities.User
 <!DOCTYPE html>
 <html lang="en">
 @{
@@ -235,10 +235,7 @@
 
         }
     </style>
-    <script src="~/assets/js/jquery.min.js"></script>
-    <script src="~/assets/js/popper.js"></script>
-    <script src="~/assets/js/bootstrap.min.js"></script>
-    <script src="~/assets/js/main.js"></script>
+
     <script>
         function hideErrorMessage(selector) {
             setTimeout(function () {
@@ -269,15 +266,17 @@
                 if (username === "") {
                     $('#usernameError').fadeIn();
                     hideErrorMessage('#usernameError');
+                    return false;
                 }
                 if (password === "") {
                     $('#passwordError').fadeIn();
                     hideErrorMessage('#passwordError');
+                                        return false;
                 }
 
                 var _login = {
-                    UserName: username,
-                    Password: password,
+                    FullName: username,
+                    PasswordHash: password,
                 };
 
                 var $button = $(this);
@@ -288,9 +287,12 @@
                     contentType: 'application/json',
                     data: JSON.stringify(_login),
                     success: function (response) {
-                        // Navigation logic based on response can be re-enabled as needed.
-                        window.location.href = `/UserMaster/UserDashBoard`;
-                    },
+                     if (response.status === 1) {
+                             window.location.href = `/UserMaster/UserDashBoard?UserId=` + response.encryptedUserId;
+                     } else {
+                         $('#LoginError').text(response.statusMessage).fadeIn();
+                         hideErrorMessage('#LoginError');
+                     }                    },
                     error: function () {
                         $('#LoginError').text('An error occurred while processing your request. Please try again.').fadeIn();
                         hideErrorMessage('#LoginError');
@@ -302,6 +304,9 @@
             });
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 </head>
 <body>
     <div class="loginBox">
@@ -309,10 +314,10 @@
         <img class="user" src="https://i.ibb.co/yVGxFPR/2.png" alt="User Icon" height="100px" width="100px">
         <form action="login.php" method="post">
             <div class="inputBox">
-                <input id="uname" type="text" name="Username" placeholder="Username" required>
+                <input id="uname" type="text" name="FullName" placeholder="Username" required>
                 <div class="error-message" id="usernameError">Enter User Name!</div>
 
-                <input id="pass" type="password" name="Password" placeholder="Password" required>
+                <input id="pass" type="password" name="PasswordHash" placeholder="Password" required>
                 <span toggle="#pass" id="passwordField" class="fa fa-fw fa-eye field-icon"></span>
                 <div class="error-message" id="passwordError">Enter Password!</div>
             </div>
@@ -324,7 +329,5 @@
         </div>
         <button class="backButton" onclick="window.location.href='../Login/AdminLogin'">Admin Login</button>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-</body>
+   </body>
 </html>
