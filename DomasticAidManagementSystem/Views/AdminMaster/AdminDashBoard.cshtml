@@ -1,7 +1,8 @@
-﻿@model HEMANTH.HOME_EXPENCE.Models.AdminMaster.DashBoard
+﻿
 @{
     Layout = "~/Views/Shared/_admin_layouy.cshtml";
 }
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -68,7 +69,7 @@
     </style>
 </head>
 <body>
-    <center><h5><b class="blinking-text">@Model.MessageMarquee</b></h5>
+    <center><h5><b class="blinking-text"></b></h5>
     </center>
     <div class="container py-4">
         <!-- Cards Row -->
@@ -80,7 +81,7 @@
                             <i class="fas fa-users"></i>
                         </div>
                         <h5 class="card-title">Families</h5>
-                        <p class="count-number" id="family-count">@Model.FamilyCount</p>
+                        <p class="count-number" id="family-count"></p>
                     </div>
                 </a>
             </div>
@@ -91,7 +92,7 @@
                             <i class="fas fa-tags"></i>
                         </div>
                         <h5 class="card-title">Categories</h5>
-                        <p class="count-number" id="category-count">@Model.CategoryCount</p>
+                        <p class="count-number" id="category-count"></p>
                     </div>
                 </a>
             </div>
@@ -114,7 +115,7 @@
                             <i class="fas fa-user-plus"></i> <!-- Icon for adding members -->
                         </div>
                         <h5 class="card-title">Add Family Members</h5>
-                        <p class="count-number" id="family-member-count">@Model.FamilyCount</p> <!-- Display family members count -->
+                        <p class="count-number" id="family-member-count">
                     </div>
                 </a>
             </div>
@@ -136,9 +137,9 @@
     <script>
         $(document).ready(function () {
             // Fetch count values from the model
-            const familyCount = @Model.FamilyCount;
-            const categoryCount = @Model.CategoryCount;
-            const approvalCount = @Model.ApprovalCount;
+            const familyCount = 12;
+            const categoryCount = 10;
+            const approvalCount = 15;
 
             // Function for Counter Animation
             function animateCounter(elementId, start, end, duration) {

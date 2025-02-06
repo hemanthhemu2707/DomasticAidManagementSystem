@@ -18,27 +18,28 @@ namespace DomasticAidManagementSystem
         [HttpGet]
         public async Task<IActionResult> AdminDashBoard(string UserId)
         {
-            if (int.TryParse(UserId, out int numericUserId))
-            {
-                UserId = numericUserId.ToString();
-            }
-            else if (UserId != null)
-            {
-                UserId = EncryptionHelper.UrlDecrypt(UserId);
-            }
+            //if (int.TryParse(UserId, out int numericUserId))
+            //{
+            //    UserId = numericUserId.ToString();
+            //}
+            //else if (UserId != null)
+            //{
+            //    UserId = Encrypt]ionHelper.UrlDecrypt(UserId);
+            //}
 
-            else
-            {
-                UserId = HttpContext.Session.GetString("UserId");
-            }
-            var response = await adminMasterService.GetDashboardCountAdminDash(Convert.ToInt32(UserId));
-            HttpContext.Session.SetString("UserName", response.UserName);
-            HttpContext.Session.SetString("UserId", response.UserId.ToString());
-            HttpContext.Session.SetString("FamilyCount", response.FamilyCount.ToString());
-            HttpContext.Session.SetString("FamilyName", response.FamilyName.ToString());
+            //else
+            //{
+            //    UserId = HttpContext.Session.GetString("UserId");
+            //}
+            //var response = await adminMasterService.GetDashboardCountAdminDash(Convert.ToInt32(UserId));
+            //HttpContext.Session.SetString("UserName", response.UserName);
+            //HttpContext.Session.SetString("UserId", response.UserId.ToString());
+            //HttpContext.Session.SetString("FamilyCount", response.FamilyCount.ToString());
+            //HttpContext.Session.SetString("FamilyName", response.FamilyName.ToString());
 
+            return View();
 
-            return View(response);
+            //return View(response);
         }
 
 
