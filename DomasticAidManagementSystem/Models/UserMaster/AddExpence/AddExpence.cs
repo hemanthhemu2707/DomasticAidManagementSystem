@@ -1,4 +1,5 @@
-﻿    using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using DomasticAidManagementSystem.Domain.Entities;
+using Microsoft.AspNetCore.Mvc.Rendering;
     using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -29,15 +30,6 @@ namespace DomasticAidManagementSystem
             }
         }
 
-        public class User
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public decimal Amount { get; set; }
-
-        public int ExpDetailsId { get; set; }
-
-        }
 
         public class Expense
         {

@@ -1,10 +1,12 @@
 ﻿
+using DomasticAidManagementSystem.Domain.Entities;
+
 namespace DomasticAidManagementSystem
 {
     public interface ILoginRepo
     {
-        public Task<LoginRequest> CheckLogin(LoginRequest request);
-        public Task<LoginRequest> RegisterNewUser(LoginRequest request);
-
+        public Task<User> CheckLogin(User request);
+        public Task<User> RegisterNewUser(User request);
+        public Task<bool> VerifyEmailExist(string email);
     }
 }

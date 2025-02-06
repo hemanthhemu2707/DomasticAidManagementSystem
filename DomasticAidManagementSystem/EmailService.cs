@@ -65,7 +65,7 @@ namespace DomasticAidManagementSystem
                 var senderPassword = emailSettings["SenderPassword"];
 
                 var emailMessage = new MimeMessage();
-                emailMessage.From.Add(new MailboxAddress("ನಮ್ಮ ಮನೆ ಕರ್ಚು", senderEmail));
+                emailMessage.From.Add(new MailboxAddress("Domastic Aid", senderEmail));
                 emailMessage.To.Add(new MailboxAddress("", toEmail));
                 emailMessage.Subject = subject;
                 emailMessage.Body = new TextPart("html") { Text = body };

@@ -1,0 +1,267 @@
+﻿@{
+    Layout = "~/Views/Shared/_user_layouy.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Cleaning Charges</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Expense</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- Include Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .form-card {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-plus, .btn-minus {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+            .btn-plus:hover {
+                background-color: darkgreen;
+            }
+
+            .btn-minus:hover {
+                background-color: darkred;
+            }
+
+        .animated-input {
+            transition: all 0.3s ease-in-out;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+            .radio-group input {
+                display: none;
+            }
+
+            .radio-group label {
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 16px;
+                cursor: pointer;
+                transition: all 0.3s ease-in-out;
+                border: 2px solid #ccc;
+                display: inline-block;
+                text-align: center;
+                min-width: 80px;
+            }
+
+            .radio-group input:checked + label {
+                background: #28a745;
+                color: white;
+                border-color: #28a745;
+                transform: scale(1.1);
+            }
+
+            .radio-group input:not(:checked) + label:hover {
+                background: #f0f0f0;
+            }
+
+            .radio-group input:checked + label.no-selected {
+                background: red !important;
+                border-color: red !important;
+            }
+
+        @@media (max-width: 768px) {
+            .form-card
+
+        {
+            width: 95%;
+            padding: 15px;
+        }
+
+        .btn-plus, .btn-minus {
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="card form-card">
+            <h2 style="text-align:center">Appartment Cleaning</h2>
+            <div class="card-body">
+                <form id="cleaningForm">
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Hall</label>
+                        <div class="col-sm-4 d-flex align-items-center">
+                            <button type="button" class="btn btn-danger btn-minus me-2" onclick="adjustValue('#hall', -1, 300)">−</button>
+                            <input type="number" id="hall" class="form-control animated-input" value="0" min="0" onchange="calculateTotal()">
+                            <button type="button" class="btn btn-success btn-plus ms-2" onclick="adjustValue('#hall', 1, 300)">+</button>
+                        </div>
+                        <div class="col-sm-5">
+                            <span class="input-group-text"><i class="fa fa-indian-rupee-sign"></i> <input type="text" id="hallPrice" class="form-control text-center" value="0" readonly>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Kitchen</label>
+                        <div class="col-sm-4 d-flex align-items-center">
+                            <button type="button" class="btn btn-danger btn-minus me-2" onclick="adjustValue('#kitchen', -1, 300)">−</button>
+                            <input type="number" id="kitchen" class="form-control animated-input" value="0" min="0" onchange="calculateTotal()">
+                            <button type="button" class="btn btn-success btn-plus ms-2" onclick="adjustValue('#kitchen', 1, 300)">+</button>
+                        </div>
+                        <div class="col-sm-5">
+                            <span class="input-group-text"><i class="fa fa-indian-rupee-sign"></i><input type="text" id="kitchenPrice" class="form-control text-center" value="0" readonly>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Room</label>
+                        <div class="col-sm-4 d-flex align-items-center">
+                            <button type="button" class="btn btn-danger btn-minus me-2" onclick="adjustValue('#room', -1, 433)">−</button>
+                            <input type="number" id="room" class="form-control animated-input" value="0" min="0" onchange="calculateTotal()">
+                            <button type="button" class="btn btn-success btn-plus ms-2" onclick="adjustValue('#room', 1, 433)">+</button>
+                        </div>
+                        <div class="col-sm-5">
+                            <span class="input-group-text"><i class="fa fa-indian-rupee-sign"></i><input type="text" id="roomPrice" class="form-control text-center" value="0" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Garden -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Garden</label>
+                        <div class="col-sm-4 d-flex align-items-center radio-group">
+                            <input type="radio" id="gardenYes" name="garden" value="yes" onclick="togglePrice('#gardenPrice', 433, true)">
+                            <label for="gardenYes">Yes</label>
+                            <input type="radio" id="gardenNo" name="garden" value="no" onclick="togglePrice('#gardenPrice', 0, false)" checked>
+                            <label for="gardenNo" class="no-selected">No</label>
+                        </div>
+                        <div class="col-sm-5 d-flex align-items-center radio-group">
+                            <span style="width:100%" class="input-group-text"><i class="fa fa-indian-rupee-sign"></i><input type="text" id="gardenPrice" class="form-control text-center" value="0" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Pesticide -->
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Need Pesticide?</label>
+                        <div class="col-sm-4 d-flex align-items-center radio-group">
+                            <input type="radio" id="pesticideYes" name="pesticide" value="yes" onclick="togglePrice('#pesticidePrice', 543, true)">
+                            <label for="pesticideYes">Yes</label>
+                            <input type="radio" id="pesticideNo" name="pesticide" value="no" onclick="togglePrice('#pesticidePrice', 0, false)" checked>
+                            <label for="pesticideNo" class="no-selected">No</label>
+                        </div>
+                        <div class="col-sm-5 d-flex align-items-center radio-group">
+                            <span style="width:100%" class="input-group-text"><i class="fa fa-indian-rupee-sign"></i><input type="text" id="pesticidePrice" class="form-control text-center" value="0" readonly></span>
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <!-- Date & Time -->
+                    <div class="mb-3">
+                        <label class="form-label">Select Date</label>
+                        <input type="date" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Select Time</label>
+                        <input type="time" class="form-control">
+                    </div>
+
+                    <!-- Total -->
+
+
+                    <div class="mb-3 row">
+                        <div class="col-sm-2 d-flex align-items-center">
+                            Total Price (₹)
+
+                        </div>
+                        <div class="col-sm-10">
+                            <span class="input-group-text"><i class="fa fa-indian-rupee-sign"></i><input type="text" id="totalPrice" class="form-control text-center" readonly>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-success w-100 mt-2">Submit</button>
+                    <button type="reset" class="btn btn-secondary w-100 mt-2">Reset</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+                            $('#gardenPrice').show();
+                            $('#pesticidePrice').show();
+
+           function adjustValue(id, amount, price) {
+                let input = $(id);
+                let value = parseInt(input.val()) || 0;
+                value = Math.max(0, value + amount);
+                input.val(value);
+                calculateTotal();
+            }
+
+            function togglePrice(id, value, isChecked) {
+                $(id).val(isChecked ? value : 0);
+                if (!isChecked) {
+                    $(id).parent().find('label').toggleClass('no-selected', true);
+                } else {
+                            $('#gardenPrice').show();
+                    $(id).parent().find('label').toggleClass('no-selected', false);
+                }
+                calculateTotal();
+            }
+
+        function calculateTotal() {
+            let hallTotal = $('#hall').val() * 300;
+            let kitchenTotal = $('#kitchen').val() * 300;
+            let roomTotal = $('#room').val() * 433;
+                let gardenTotal = $('#gardenYes').is(':checked') ? 433 : 0;
+                let pesticideTotal = $('#pesticideYes').is(':checked') ? 543 : 0;
+
+            $('#hallPrice').val(hallTotal.toFixed(2));
+            $('#kitchenPrice').val(kitchenTotal.toFixed(2));
+            $('#roomPrice').val(roomTotal.toFixed(2));
+            $('#garderprice').val(gardenTotal.toFixed(2));
+            $('#Pesticideprice').val(pesticideTotal.toFixed(2));
+
+            let total = hallTotal + kitchenTotal + roomTotal + gardenTotal + pesticideTotal;
+            $('#totalPrice').val(total.toFixed(2));
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

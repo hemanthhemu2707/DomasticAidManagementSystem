@@ -23,11 +23,11 @@ builder.Services.AddScoped<IAdminMasterService, AdminMasterService>();
 builder.Services.AddScoped<IAdminMasterRepo, AdminMasterRepo>();
 builder.Services.AddScoped<IUserMasterService, UserMasterService>();
 
-builder.Services.AddTransient<LoginDBTypes>();
+//builder.Services.AddTransient<LoginDBTypes>();
 builder.Services.AddTransient<EmailService>();
-builder.Services.AddTransient<CategoryTableDBTypes>();
-builder.Services.AddTransient<FamilyTableDBTypes>();
-builder.Services.AddTransient<ExpenseMasterTableDBTypes>();
+//builder.Services.AddTransient<CategoryTableDBTypes>();
+//builder.Services.AddTransient<FamilyTableDBTypes>();
+//builder.Services.AddTransient<ExpenseMasterTableDBTypes>();
 
 var app = builder.Build();
 

@@ -1,4 +1,4 @@
-﻿using HEMANTH.HOME_EXPENSE.ServiceInterface;
+﻿using DomasticAidManagementSystem.Domain.Entities;
 using IIITS.EFCore.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,130 +21,76 @@ namespace DomasticAidManagementSystem
 
 
 
-        public async Task<LoginRequest> CheckLogin(LoginRequest request)
+        public async Task<User> CheckLogin(User request)
         {
-            LoginRequest loginRequest = request as LoginRequest;
-            if (loginRequest.RoleType == 1)
+            try
             {
-                var dbType = await _dbContext.LoginDetails
-                                    .Where(x => x.UserName == request.UserName && x.UserPassword == request.Password && x.AdminStatus == 1)
-                                    .ToListAsync();
-                if (dbType.Count > 0)
-                {
-                    loginRequest.Status = 1;
-                    loginRequest.StatusMessage = "Login successful!";
-                    loginRequest.RoleType = 1;
+                var user = await _dbContext.Users
+                    .FirstOrDefaultAsync(x =>
+                        (x.FullName == request.FullName || x.Email == request.Email)
+                        && x.PasswordHash == request.PasswordHash);
 
+                if (user != null)
+                {
+                    return new User
+                    {
+                        UserId = user.UserId,
+                        FullName = user.FullName,
+                        Email = user.Email,
+                        Status = 1,
+                        StatusMessage = "Login Successful"
+                    };
                 }
                 else
                 {
-                    loginRequest.Status = 0;
-                    loginRequest.StatusMessage = "Invalid Admin Crediatials !";
+                    return new User
+                    {
+                        Status = 0,
+                        StatusMessage = "Invalid Credentials"
+                    };
                 }
             }
-            else
+            catch(Exception ex)
             {
-
-                try
-                {
-
-                var dbType = await _dbContext.LoginDetails
-                    .Where(x => x.UserName == request.UserName && x.UserPassword == request.Password)
-                    .ToListAsync();
-                // Ensure the result is awaited properly
-
-                // Check if result is not null and contains a valid boolean status
-                if (dbType.Count > 0)
-                {
-                    if (dbType.FirstOrDefault().UserApproveStatus == 0)
-                    {
-                        loginRequest.Status = 0;
-                        loginRequest.StatusMessage = "Please Wait Untill Approve !";
-                    }
-                    else
-                    {
-                        loginRequest.Status = 1;
-                        loginRequest.StatusMessage = "Login successful!";
-                    }
-
-                }
-                else
-                {
-                    loginRequest.Status = 0;
-                    loginRequest.StatusMessage = "Invalid credentials!";
-                }
+                return new User();
             }
-                catch(Exception ex)
-                    {
-
-                }
-            }
-            // Return the login request after processing
-            return loginRequest;
         }
 
 
 
 
-        public async Task<LoginRequest> RegisterNewUser(LoginRequest request)
+
+
+        public async Task<User> RegisterNewUser(User request)
         {
-            LoginRequest loginRequest = request as LoginRequest;
+            User loginRequest = request as User;
             if (loginRequest == null)
             {
-                loginRequest = new LoginRequest();
+                loginRequest = new User();
             }
             try
             {
-                var dbType1 = await _dbContext.LoginDetails
-       .Where(x => x.UserName == request.UserName)
-       .ToListAsync();  // Using ToList() instead of ToListAsync()
+                var dbType1 = await _dbContext.Users
+       .Where(x => x.FullName == request.FullName)
+       .ToListAsync();  
             }
             catch(Exception ex)
             {
 
             }
 
-            var dbType = await _dbContext.LoginDetails
-       .Where(x => x.UserName == request.UserName)
+            var dbType = await _dbContext.Users
+       .Where(x => x.FullName == request.FullName)
        .ToListAsync();  // Using ToList() instead of ToListAsync()
 
-            if (dbType != null && dbType.Count > 0) 
-            {
+        
 
-                loginRequest.UserId = dbType.FirstOrDefault().UserId;
-                loginRequest.ApprovalStatus = dbType.FirstOrDefault().UserApproveStatus;
-
-                if (loginRequest.ApprovalStatus == 0)
-                {
-                    loginRequest.Status = 0;
-                    loginRequest.StatusMessage = "Email Already Registerd ! Please Wait for Approval ";
-                }
-                else
-                {
-                    loginRequest.Status = 0;
-                    loginRequest.StatusMessage = "Email Already Registerd ! Please Login ";
-                }
-
-                       }
-            else
-            {
-                var newLeaveRecord = new LoginDBTypes
-
-                {
-                    UserName = request.UserName,
-                    UserPhone = request.UserPhoneNumber,
-                    UserEmailAdress = request.UserEmail,
-                    UserPassword = request.Password,
-                    AdminStatus=0
-                    
-                };
-
-                var existingUserByEmail = await _dbContext.LoginDetails
-        .Where(x => x.UserEmailAdress == request.UserEmail)
+                var existingUserByEmail = await _dbContext.Users
+        .Where(x => x.Email == request.Email)
         .FirstOrDefaultAsync();
 
-                var existingUserByUserNameUpperCase = await _dbContext.LoginDetails
-        .Where(x => x.UserName.ToUpper() == request.UserName.ToUpper())
+                var existingUserByFullNameUpperCase = await _dbContext.Users
+        .Where(x => x.FullName.ToUpper() == request.FullName.ToUpper())
         .FirstOrDefaultAsync();
 
 
@@ -154,7 +100,7 @@ namespace DomasticAidManagementSystem
                     loginRequest.StatusMessage = "Email Already Registerd ! Please Login ";
 
                 }
-                else if (existingUserByUserNameUpperCase != null)
+                else if (existingUserByFullNameUpperCase != null)
 
                 {
                     loginRequest.Status = 0;
@@ -163,30 +109,36 @@ namespace DomasticAidManagementSystem
                 }
                 else
                 {
-                    await _dbContext.LoginDetails.AddAsync(newLeaveRecord);
-                    await _dbContext.SaveChangesAsync();
-                    loginRequest.Status = 1;
-                    loginRequest.StatusMessage = "Registration Sucessfully  ? Request Sent to ADMIN wait for Approve Check Email !";
+                    //await _dbContext.Users.AddAsync(newLeaveRecord);
+                    //await _dbContext.SaveChangesAsync();
+                    //loginRequest.Status = 1;
+                    //loginRequest.StatusMessage = "Registration Sucessfully  ? Request Sent to ADMIN wait for Approve Check Email !";
 
                   
 
-                    string userEmailBody = $"<p>Dear {request.UserName},</p><p>Your registration was successful. Please wait for admin approval.</p>";
-                    await _emailService.SendEmailAsync(request.UserEmail, "Registration Successful", userEmailBody);
+                    string EmailBody = $"<p>Dear {request.FullName},</p><p>Your registration was successful. Please wait for admin approval.</p>";
+                    await _emailService.SendEmailAsync(request.Email, "Registration Successful", EmailBody);
 
-                    var AdminEmail = await _dbContext.LoginDetails
-      .Where(x => x.UserApproveStatus == 1)
-      .FirstOrDefaultAsync();
-                    string adminEmailBody = $"<p>A new user, {request.UserName}, has registered and is awaiting approval.</p>";
-                    await _emailService.SendEmailAsync(AdminEmail.UserEmailAdress, "New User Registration", adminEmailBody);
+      //              var AdminEmail = await _dbContext.Users
+      //.Where(x => x.UserApproveStatus == 1)
+      //.FirstOrDefaultAsync();
+      //              string adminEmailBody = $"<p>A new user, {request.FullName}, has registered and is awaiting approval.</p>";
+      //              await _emailService.SendEmailAsync(AdminEmail.Email, "New User Registration", adminEmailBody);
                 }
 
 
 
-
-            }
-
             return loginRequest;
+
         }
 
+
+        public async Task<bool> VerifyEmailExist(string email)
+        {
+            var details = await _dbContext.Users.Where(x => x.Email == email).ToListAsync();
+            return details.Any();
+        }
     }
-}
+
+    }
+

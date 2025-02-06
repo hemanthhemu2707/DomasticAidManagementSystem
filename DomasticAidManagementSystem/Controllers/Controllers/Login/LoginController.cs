@@ -1,4 +1,5 @@
 ﻿using DomasticAidManagementSystem;
+using DomasticAidManagementSystem.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 namespace HEMANTH.HOME_EXPENCE.Controllers.Login
 {
@@ -32,14 +33,14 @@ namespace HEMANTH.HOME_EXPENCE.Controllers.Login
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] LoginRequest _login)
+        public async Task<IActionResult> Login([FromBody] User user)
         {
-            //var res = await _loginService.CheckLogin(_login);
-            //HttpContext.Session.SetString("UserId", res.UserId.ToString());
-            //res.EncryptedUserId = EncryptionHelper.UrlEncrypt(res.UserId.ToString());
-            //return Json(res);
-            return Json("");
-
+            var res = await _loginService.CheckLogin(user);
+            HttpContext.Session.SetString("UserId", res.UserId.ToString());
+            HttpContext.Session.SetString("UserName", res.FullName.ToString());
+            HttpContext.Session.SetString("IsAdmin", res.Role.ToString());
+            res.EncrptedUserId = EncryptionHelper.UrlEncrypt(res.UserId.ToString());
+            return Json(res);
         }
 
 
@@ -47,22 +48,14 @@ namespace HEMANTH.HOME_EXPENCE.Controllers.Login
 
 
         [HttpGet]
-        public IActionResult RegisterUser(string? name, string? email, string? phoneNumber,string? acessk)
+        public IActionResult RegisterUser()
         {
-            LoginRequest _login = new LoginRequest();
-            if (name != null)
-            {
-                _login.UserEmail = EncryptionHelper.UrlDecrypt( email);
-                _login.UserPhoneNumber = EncryptionHelper.UrlDecrypt(phoneNumber);
-                _login.UserName = EncryptionHelper.UrlDecrypt(name);
-                _login.AccessKey = EncryptionHelper.UrlDecrypt(acessk);
-                _login.EmilThroghLogin = 1;
-            }
+            User _login = new User();
             return View(_login);
         }
 
         [HttpPost]
-        public async Task<IActionResult> RegisterUser([FromBody] LoginRequest _login)
+        public async Task<IActionResult> RegisterUser([FromBody] User _login)
         {
 
             var res = await _loginService.RegisterUser(_login);
@@ -80,11 +73,11 @@ namespace HEMANTH.HOME_EXPENCE.Controllers.Login
 
 
         [HttpPost]
-        public async Task<IActionResult> GenerateOTP(string email, bool isJoiningFamily)
+        public async Task<IActionResult> GenerateOTP(string email)
         {
             var otp = new Random().Next(1000, 9999).ToString();
             var response = await _loginService.VerifyEmailExist(email);
-            if (response && !isJoiningFamily)
+            if (response)
             {
 
                 return Json(new { success = false, Message = "Email Already Used Please Use Diffrent !" });
@@ -198,7 +191,7 @@ namespace HEMANTH.HOME_EXPENCE.Controllers.Login
         }
 
         [HttpPost]
-        public async Task<IActionResult> ResetPassword([FromBody] LoginRequest Details)
+        public async Task<IActionResult> ResetPassword([FromBody] User Details)
             {
             var res = await _loginService.ResetPassword(Details);
             return Json(new { success = res });

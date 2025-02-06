@@ -277,7 +277,7 @@
         <header class="header" id="header">
             <div class="header_toggle"> <i class='bx bx-menu' id="header-toggle"></i> </div>
        <h4>
-            Domastic Aid Management System
+            Domastic Aid
        </h4>
 
         <div class="header_img">
@@ -289,29 +289,29 @@
         <div class="l-navbar" id="nav-bar">
             <nav class="nav">
                 <div>
-                    <a href="#" class="nav_logo"> <i class='bx bx-layer nav_logo-icon'></i> <span class="nav_logo-name">Domastic Aid</span> </a>
+                <a href="../UserMaster/UserDashBoard" class="nav_logo"> <i class='bx bx-layer nav_logo-icon'></i> <span class="nav_logo-name">Domastic Aid</span> </a>
                     <div class="nav_list">
-                        <a href="#" class="nav_link active">
+                    <a href="../UserMaster/UserDashBoard" class="nav_link active">
                         <i class='bx bx-grid-alt nav_icon'></i>
                         <span class="nav_name">Dashboard</span>
                     </a>
 
-                    <a href="#" class="nav_link">
+                    <a href="../UserMaster/HomeCleaning" class="nav_link">
                         <i class='bx bx-home nav_icon'></i>
                         <span class="nav_name">Home</span>
                     </a>
-                    <a href="#" class="nav_link">
+                    <a href="../UserMaster/IndustriesCleaning" class="nav_link">
                         <i class='bx bx-building-house nav_icon'></i>
                         <span class="nav_name">Factory/Industry</span>
                     </a>
-                    <a href="#" class="nav_link">
+                    <a href="../UserMaster/ApartmentCleaning" class="nav_link">
                         <i class='bx bx-building-house nav_icon'></i>
                         <span class="nav_name">Apartment</span>
                     </a>
-                    <a href="#" class="nav_link">
+         @*            <a href="../UserMaster/UserDashBoard" class="nav_link">
                         <i class='bx bx-briefcase nav_icon'></i>
                         <span class="nav_name">Work Details</span>
-                    </a>
+                    </a> *@
 
                     </div>
                 </div> <a href="../Login/Login" class="nav_link"> <i class='bx bx-log-out nav_icon'></i> <span class="nav_name">SignOut</span> </a>
@@ -319,8 +319,8 @@
         </div>
 
         <!--Container Main start-->
-        <div class="height-100 bg-light">
-        <div class="main-content" id="mainContent">
+        @* <div class="height-100 bg-light"> *@
+        <div class="main-content" style="margin-top:70px" id="mainContent">
             @RenderBody()
 
         </div>
@@ -328,7 +328,7 @@
         <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
         @await RenderSectionAsync("Scripts", required: false)
-    </div>
+    @* </div> *@
         <!--Container Main end-->
     </body>
 </html>
