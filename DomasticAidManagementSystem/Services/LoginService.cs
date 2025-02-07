@@ -23,9 +23,10 @@ namespace DomasticAidManagementSystem
             return response;
         }
 
-        public Task<bool> ResetPassword(User request)
+        public async Task<bool> ResetPassword(User request)
         {
-            throw new NotImplementedException();
+            var response = await _login.ResetPassword(request);
+            return response;
         }
 
         public async Task<bool> VerifyEmailExist(string email)

@@ -36,10 +36,13 @@ namespace HEMANTH.HOME_EXPENCE.Controllers.Login
         public async Task<IActionResult> Login([FromBody] User user)
         {
             var res = await _loginService.CheckLogin(user);
-            HttpContext.Session.SetString("UserId", res.UserId.ToString());
-            HttpContext.Session.SetString("UserName", res.FullName.ToString());
-            HttpContext.Session.SetString("IsAdmin", res.Role.ToString());
-            res.EncrptedUserId = EncryptionHelper.UrlEncrypt(res.UserId.ToString());
+            if (res.Status == 1)
+            {
+                HttpContext.Session.SetString("UserId", res.UserId.ToString());
+                HttpContext.Session.SetString("UserName", res.FullName.ToString());
+                HttpContext.Session.SetString("IsAdmin", res.Role.ToString());
+                res.EncrptedUserId = EncryptionHelper.UrlEncrypt(res.UserId.ToString());
+            }
             return Json(res);
         }
 

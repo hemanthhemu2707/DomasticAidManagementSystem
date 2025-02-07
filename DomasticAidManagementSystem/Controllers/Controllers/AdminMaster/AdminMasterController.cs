@@ -24,20 +24,14 @@ namespace DomasticAidManagementSystem
             }
             else if (UserId != null)
             {
-                UserId = EncryptionHelper.UrlDecrypt(UserId);
+                UserId = UserId == "undefined" ? HttpContext.Session.GetString("UserId") : EncryptionHelper.UrlDecrypt(UserId);
             }
 
             else
             {
                 UserId = HttpContext.Session.GetString("UserId");
             }
-            var response = await adminMasterService.GetDashboardCountAdminDash(Convert.ToInt32(UserId));
-            HttpContext.Session.SetString("UserName", response.UserName);
-            HttpContext.Session.SetString("UserId", response.UserId.ToString());
-            HttpContext.Session.SetString("FamilyCount", response.FamilyCount.ToString());
-            HttpContext.Session.SetString("FamilyName", response.FamilyName.ToString());
-
-
+            DashBoard response = new DashBoard();
             return View(response);
         }
 

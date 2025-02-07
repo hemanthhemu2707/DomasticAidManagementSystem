@@ -26,8 +26,5 @@ namespace DomasticAidManagementSystem.Repositories.DBConfig.Login
 
         [Column("role")]
         public int Role { get; set; }
-
-        [Column("created_at")]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-    }
+     }
 }

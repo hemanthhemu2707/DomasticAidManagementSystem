@@ -1,4 +1,5 @@
 ﻿using DomasticAidManagementSystem.Domain.Entities;
+using DomasticAidManagementSystem.Repositories.DBConfig.Login;
 using IIITS.EFCore.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,10 +26,21 @@ namespace DomasticAidManagementSystem
         {
             try
             {
-                var user = await _dbContext.Users
-                    .FirstOrDefaultAsync(x =>
-                        (x.FullName == request.FullName || x.Email == request.Email)
+                UsersTableDBType user = new UsersTableDBType();
+                if (request.Role == 1)
+                {
+                    user = await _dbContext.Users
+                    .FirstOrDefaultAsync(x => x.Role==1 &&
+                        (x.FullName == request.FullName || x.Email == request.FullName)
                         && x.PasswordHash == request.PasswordHash);
+                }
+                else
+                {
+                    user = await _dbContext.Users
+                        .FirstOrDefaultAsync(x =>
+                            (x.FullName == request.FullName || x.Email == request.FullName)
+                            && x.PasswordHash == request.PasswordHash);
+                }
 
                 if (user != null)
                 {
@@ -38,6 +50,7 @@ namespace DomasticAidManagementSystem
                         FullName = user.FullName,
                         Email = user.Email,
                         Status = 1,
+                        Role=user.Role,
                         StatusMessage = "Login Successful"
                     };
                 }
@@ -52,8 +65,12 @@ namespace DomasticAidManagementSystem
             }
             catch(Exception ex)
             {
-                return new User();
-            }
+                return new User
+                { 
+                    Status = 0,
+                        StatusMessage = "Something Went Wrong try agin!"
+                    };
+        }
         }
 
 
@@ -63,80 +80,64 @@ namespace DomasticAidManagementSystem
 
         public async Task<User> RegisterNewUser(User request)
         {
-            User loginRequest = request as User;
-            if (loginRequest == null)
-            {
-                loginRequest = new User();
-            }
+
             try
             {
-                var dbType1 = await _dbContext.Users
-       .Where(x => x.FullName == request.FullName)
-       .ToListAsync();  
-            }
-            catch(Exception ex)
-            {
-
-            }
-
-            var dbType = await _dbContext.Users
-       .Where(x => x.FullName == request.FullName)
-       .ToListAsync();  // Using ToList() instead of ToListAsync()
-
-        
-
-                var existingUserByEmail = await _dbContext.Users
-        .Where(x => x.Email == request.Email)
-        .FirstOrDefaultAsync();
-
-                var existingUserByFullNameUpperCase = await _dbContext.Users
-        .Where(x => x.FullName.ToUpper() == request.FullName.ToUpper())
-        .FirstOrDefaultAsync();
-
-
-                if (existingUserByEmail != null)
+                var userDbType = new UsersTableDBType
                 {
-                    loginRequest.Status = 0;
-                    loginRequest.StatusMessage = "Email Already Registerd ! Please Login ";
-
-                }
-                else if (existingUserByFullNameUpperCase != null)
-
+                    Email = request.Email,
+                    Address = request.Address,
+                    FullName = request.FullName,
+                    PasswordHash = request.PasswordHash,
+                    Phone = request.Phone,
+                    Role = request.Role,
+                };
+                var userDetails=await _dbContext.AddAsync(userDbType);
+                await _dbContext.SaveChangesAsync();
+                if(userDetails!=null)
                 {
-                    loginRequest.Status = 0;
-                    loginRequest.StatusMessage = "User Name Already Registerd ! Please Use Diffrent ";
-
+                    string EmailBody = $"<p>Dear {request.FullName},</p><p>Your registration was successful. Please login.</p>";
+                    await _emailService.SendEmailAsync(request.Email, "Registration Successful", EmailBody);
+                    request.Status = 1;
+                    request.StatusMessage = "User Registed Sucessfully Please Login";
                 }
                 else
                 {
-                    //await _dbContext.Users.AddAsync(newLeaveRecord);
-                    //await _dbContext.SaveChangesAsync();
-                    //loginRequest.Status = 1;
-                    //loginRequest.StatusMessage = "Registration Sucessfully  ? Request Sent to ADMIN wait for Approve Check Email !";
+                    request.Status = 0;
+                    request.StatusMessage = "Failed to Create User Try agin !";
 
-                  
-
-                    string EmailBody = $"<p>Dear {request.FullName},</p><p>Your registration was successful. Please wait for admin approval.</p>";
-                    await _emailService.SendEmailAsync(request.Email, "Registration Successful", EmailBody);
-
-      //              var AdminEmail = await _dbContext.Users
-      //.Where(x => x.UserApproveStatus == 1)
-      //.FirstOrDefaultAsync();
-      //              string adminEmailBody = $"<p>A new user, {request.FullName}, has registered and is awaiting approval.</p>";
-      //              await _emailService.SendEmailAsync(AdminEmail.Email, "New User Registration", adminEmailBody);
                 }
+            }
+
+            catch (Exception ex)
+            {
+
+            }
+
+                   
 
 
 
-            return loginRequest;
+            return request;
 
         }
 
 
         public async Task<bool> VerifyEmailExist(string email)
-        {
+            {
             var details = await _dbContext.Users.Where(x => x.Email == email).ToListAsync();
             return details.Any();
+        }
+
+        public async Task<bool> ResetPassword(User request)
+        {
+            var details = await _dbContext.Users.Where(x => x.Email == request.Email).FirstOrDefaultAsync();
+            if(details.UserId>0)
+            {
+                details.PasswordHash = request.PasswordHash;
+            }
+            await _dbContext.SaveChangesAsync();
+            return details.UserId > 0;
         }
     }
 
