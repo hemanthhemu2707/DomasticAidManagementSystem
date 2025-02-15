@@ -1,0 +1,67 @@
+﻿@model DomasticAidManagementSystem.OrderMaster
+
+@{
+    Layout = "~/Views/Shared/_user_layouy.cshtml";
+    ViewData["Title"] = "Order History";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="container mt-4">
+    <h2 class="text-center">📜 Order History</h2>
+
+    <div class="table-responsive">
+        <table id="orderTable" class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Order Number</th>
+                    <th>Order Date</th>
+                    <th>Order Amount</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.OrderHistory != null && Model.OrderHistory.Any() && Model.OrderHistory.Count > 0)
+                {
+                    <script>
+                        alert()
+</script>
+                    @foreach (var order in Model.OrderDetails)
+                    {
+                        <tr>
+                            <td>@order.OrderNumber</td>
+                            <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
+                            <td>$@order.OrderAmount</td>
+                            <td>@order.CategoryName</td>
+                            <td>@order.Quantity</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#orderTable').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "language": {
+                    "search": "🔍 Search:",
+                    "lengthMenu": "Show _MENU_ orders per page",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ orders",
+                },
+                "order": [[1, "desc"]] // Order by Order Date descending
+            });
+        });
+    </script>
+}

@@ -1,162 +1,109 @@
-﻿@model DomasticAidManagementSystem.LoginRequest
+﻿@model DomasticAidManagementSystem.DashBoard
+@using System.Text.Json;
 @{
     Layout = "~/Views/Shared/_user_layouy.cshtml";
 }
 
-<!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile View</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .profile-container {
-            top:5%;
-            width: 500px;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        .dashboard-container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
             text-align: center;
-            position: relative;
         }
 
-        .profile-pic {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 4px solid #007BFF;
-            transition: transform 0.3s;
-        }
-
-            .profile-pic:hover {
-                transform: scale(1.1);
-            }
-
-        .username {
+        .title {
             font-size: 24px;
             font-weight: bold;
-            margin: 10px 0;
+            margin-bottom: 20px;
         }
 
-        .email {
-            font-size: 16px;
-            color: gray;
-        }
-
-        .buttons {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 12px 20px;
-            background: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: background 0.3s;
-        }
-
-            .btn:hover {
-                background: #0056b3;
-            }
-
-        .tab-container {
-            margin-top: 20px;
+        .profile-card {
             background: #f8f9fa;
             padding: 20px;
             border-radius: 10px;
-            display: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            margin-bottom: 20px;
         }
 
-        .tabs {
+            .profile-card h3 {
+                margin: 0;
+                font-size: 20px;
+            }
+
+            .profile-card p {
+                margin: 5px 0;
+                font-size: 16px;
+            }
+
+        .card-container {
             display: flex;
-            justify-content: space-around;
-            margin-bottom: 15px;
+            justify-content: space-between;
+            margin-top: 20px;
         }
 
-        .tab {
-            cursor: pointer;
-            padding: 10px 20px;
-            background: #dcdcdc;
-            border-radius: 5px;
-            font-weight: bold;
+        .action-card {
+            flex: 1;
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 10px;
             transition: 0.3s;
+            cursor: pointer;
         }
 
-            .tab.active {
-                background: #007BFF;
-                color: white;
+            .action-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
             }
 
-        .tab-content {
-            display: none;
-        }
-
-            .tab-content.active {
-                display: block;
+            .action-card i {
+                font-size: 40px;
+                margin-bottom: 10px;
+                color: #007bff;
             }
 
-        .user {
-            margin: 0 auto 20px;
-            display: block;
-        }
-
+            .action-card h4 {
+                margin: 10px 0;
+                font-size: 18px;
+            }
     </style>
 </head>
 <body>
     <br />
     <br />
-    <div class="profile-container">
-        <img class="user" src="https://i.ibb.co/yVGxFPR/2.png" alt="User Icon" height="100px" width="100px">
-        <div class="username">John Doe</div>
-        <div class="email">john.doe@example.com</div>
+    <br />
 
-        <div class="buttons">
-            <button class="btn" id="viewOrders">Order History</button>
-            <button class="btn" id="generateBill">Generate Bill</button>
+    <div class="dashboard-container">
+        <div class="title">Welcome to the Domestic Aid Management System</div>
+
+        <div class="profile-card">
+            <h1 style="text-align:center">User Profile</h1>
+            <p><strong>Username:</strong> @Context.Session.GetString("UserName")</p>
+            <p><strong>Email:</strong> @Context.Session.GetString("Email")</p>
+            <p><strong>Phone Number:</strong> @Context.Session.GetString("PhoneNumber")</p>
         </div>
 
-        <div class="tab-container" id="orderTabs">
-            <div class="tabs">
-                <div class="tab active" data-tab="details">Order Details</div>
-                <div class="tab" data-tab="history">Order History</div>
+        <div class="card-container">
+            <div class="action-card" onclick="location.href='/UserMaster/GetOrderHistory'">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <h4>View History</h4>
             </div>
-            <div class="tab-content active" id="details">📦 Your current order details will be displayed here.</div>
-            <div class="tab-content" id="history">🧾 Your past order history will be displayed here.</div>
+
+            <div class="action-card" onclick="location.href='/UserMaster/GetOrderDetails'">
+                <i class="fa-solid fa-list"></i>
+                <h4>Booked Details</h4>
+            </div>
+
+            <div class="action-card" onclick="location.href='/UserMaster/GetOrderDetailsBill'">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                <h4>Generate Bill</h4>
+            </div>
         </div>
     </div>
-
-    <script>
-        $(document).ready(function(){
-            $("#viewOrders").click(function(){
-                $("#orderTabs").fadeToggle();
-            });
-
-            $(".tab").click(function(){
-                $(".tab").removeClass("active");
-                $(this).addClass("active");
-
-                $(".tab-content").removeClass("active");
-                $("#" + $(this).data("tab")).addClass("active");
-            });
-        });
-    </script>
 </body>
-</html>

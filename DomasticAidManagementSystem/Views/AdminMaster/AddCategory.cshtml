@@ -1,0 +1,234 @@
+﻿@{
+    Layout = "~/Views/Shared/_admin_layouy.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Category Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background: #f4f4f4;
+        }
+
+        .card {
+            transition: 0.3s;
+            border-radius: 15px;
+        }
+
+            .card:hover {
+                transform: scale(1.05);
+                box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+            }
+
+        .edit-mode {
+            background: #ffc107 !important;
+            color: black !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Admin - Category and UOM Management</h2>
+
+        <div class="row">
+            <!-- Main Category Form -->
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5 id="categoryFormTitle">Add Main Category</h5>
+                    <input type="hidden" id="categoryId" />
+                    <input type="text" class="form-control mb-2" id="mainCategory" placeholder="Enter Main Category">
+                    <button class="btn btn-primary save-btn w-100" onclick="saveCategory()" id="saveCategoryBtn">Save</button>
+                </div>
+            </div>
+
+            <!-- SubCategory Form -->
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5>Add Sub Category</h5>
+                    <select id="categorySelect" class="form-control mb-2">
+                        <option value="">Select Main Category</option>
+                    </select>
+                    <input type="text" class="form-control mb-2" id="subCategory" placeholder="Enter SubCategory">
+                    <select id="subCategoryUOM" class="form-control mb-2">
+                        <option value="">Select Unit of Measure</option>
+                    </select>
+                    <input type="text" class="form-control mb-2" id="BasePrice" placeholder="Enter Base Price">
+                    <button class="btn btn-success update-btn w-100" onclick="updateSubCategory()">Update SubCategory</button>
+                    <button class="btn btn-success save-btn w-100" onclick="addSubCategory()">Save SubCategory</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Display Categories -->
+        <div class="row mt-4">
+            <h4>Categories</h4>
+            <div id="categoryList" class="row"></div>
+        </div>
+
+        <!-- Display SubCategories -->
+        <div class="row mt-4">
+            <h4>SubCategories</h4>
+            <div id="subCategoryList" class="row"></div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+
+            $('.update-btn').hide();
+            loadCategories();
+            loadUOMOptions();
+            loadSubCategories();
+        });
+
+        // Function to Load UOM Options
+        function loadUOMOptions() {
+            $.get("/AdminMaster/GetAllUom", function (data) {
+                $('#subCategoryUOM').empty().append('<option value="">Select Unit of Measure</option>');
+                data.forEach(uom => {
+                    $('#subCategoryUOM').append(`<option value="${uom.unitId}">${uom.unitName}</option>`);
+                });
+            });
+        }
+
+        function saveCategory() {
+            let categoryId = $("#categoryId").val();
+            let categoryName = $("#mainCategory").val().trim();
+            if (!categoryName) { alert("Enter category name!"); return; }
+
+            let url = categoryId ? "/AdminMaster/UpdateCategory" : "/AdminMaster/AddCategory";
+            let data = { categoryId, categoryName };
+
+            $.post(url, data, function () {
+                $("#categoryId").val("");
+                $("#mainCategory").val("");
+                $("#saveCategoryBtn").text("Save").removeClass("btn-warning").addClass("btn-primary");
+                $("#categoryFormTitle").text("Add Main Category");
+                loadCategories();
+            });
+        }
+
+        function loadCategories() {
+            $.get("/AdminMaster/GetCategories", function (data) {
+                let categorySelect = $("#categorySelect");
+                let categoryList = $("#categoryList");
+                categorySelect.empty().append('<option value="">Select Main Category</option>');
+                categoryList.empty();
+                data.forEach(category => {
+                    categorySelect.append(`<option value="${category.categoryId}">${category.categoryName}</option>`);
+                    categoryList.append(`<div class="col-md-4">
+                        <div class="card p-3 text-center">
+                            <h5>${category.categoryName}</h5>
+                            <button class="btn btn-sm btn-warning" onclick="editCategory(${category.categoryId}, '${category.categoryName}')">Edit</button>
+                        </div>
+                    </div>`);
+                });
+            });
+        }
+
+        function editCategory(id, name) {
+            $("#categoryId").val(id);
+            $("#mainCategory").val(name);
+            $("#saveCategoryBtn").text("Update").removeClass("btn-primary").addClass("btn-warning");
+            $("#categoryFormTitle").text("Edit Category");
+        }
+
+        function addSubCategory() {
+            let categoryId = $("#categorySelect").val();
+            let subCategoryName = $("#subCategory").val().trim();
+            let uomId = $("#subCategoryUOM").val();
+            let basePrice = $("#BasePrice").val().trim();
+
+            if (!categoryId || !subCategoryName || !uomId || !basePrice) {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            let data = {
+                categoryId: categoryId,
+                subCategoryName: subCategoryName,
+                uomId: uomId,
+                basePrice: basePrice
+            };
+
+            $.post("/AdminMaster/AddSubCategory", data, function () {
+                $("#subCategory").val("");
+                $("#subCategoryUOM").val("");
+                $("#BasePrice").val("");
+                loadSubCategories();
+            });
+        }
+
+        function loadSubCategories() {
+            $.get("/AdminMaster/GetSubCategories", function (data) {
+                let subCategorySelect = $("#subCategoryList");
+                                                subCategorySelect.empty().append('<option value="">Select SubCategory</option>');
+                subCategorySelect.empty();
+                data.forEach(subCategory => {
+                                        subCategorySelect.append(`<option value="${subCategory.subCategoryId}">${subCategory.subCategoryName}</option>`);
+                    subCategorySelect.append(`<div class="col-md-4">
+                        <div class="card p-3 text-center">
+                            <h5>${subCategory.subCategoryName}</h5>
+                            <p>Main Category: ${subCategory.mainCategoryName}</p>
+                            <p>UOM: ${subCategory.unitOfMeasureName}</p>
+                            <p>Base Price: ${subCategory.basePrice}</p>
+                            <button class="btn btn-sm btn-warning" onclick="editSubCategory(${subCategory.subCategoryId}, '${subCategory.subCategoryName}', ${subCategory.categoryId}, ${subCategory.uomId}, ${subCategory.basePrice})">Edit</button>
+                        </div>
+                    </div>`);
+                });
+            });
+        }
+
+               function editSubCategory(id, name, categoryId, uomId, basePrice) {
+            $("#subCategory").val(name);
+            $("#categorySelect").val(categoryId);
+            $("#subCategoryUOM").val(uomId);
+            $("#BasePrice").val(basePrice);
+            $("#subCategory").data("subCategoryId", id);
+            $(".update-btn").show();
+            $(".save-btn").hide();
+            $(".update-btn").text("Update SubCategory").removeClass("btn-success").addClass("btn-warning").off("click").on("click", updateSubCategory);
+        }
+
+        function updateSubCategory() {
+            let subCategoryId = $("#subCategory").data("subCategoryId");
+            let categoryId = $("#categorySelect").val();
+            let subCategoryName = $("#subCategory").val().trim();
+            let uomId = $("#subCategoryUOM").val();
+            let basePrice = $("#BasePrice").val().trim();
+
+            if (!categoryId || !subCategoryName || !uomId || !basePrice) {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            let data = {
+                subCategoryId: subCategoryId,
+                categoryId: categoryId,
+                subCategoryName: subCategoryName,
+                uomId: uomId,
+                basePrice: basePrice
+            };
+
+            $.post("/AdminMaster/UpdateSubCategory", data, function () {
+                $("#subCategory").val("");
+                $("#categorySelect").val("");
+                $("#subCategoryUOM").val("");
+                $("#BasePrice").val("");
+                     $(".update-btn").hide();
+            $(".save-btn").show();
+                // Reset button to "Save SubCategory"
+                $(".save-btn").text("Save SubCategory").removeClass("btn-warning").addClass("btn-success").off("click").on("click", addSubCategory);
+
+                loadSubCategories();
+            });
+        }
+
+    </script>
+</body>
+</html>

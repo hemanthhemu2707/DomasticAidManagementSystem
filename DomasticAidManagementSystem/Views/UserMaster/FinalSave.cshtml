@@ -1,0 +1,185 @@
+﻿@{
+    Layout = "~/Views/Shared/_user_layouy.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f4f4f4;
+            margin: 0;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .confirmation-container {
+            margin-left: 198px;
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            max-width: 900px;
+        }
+
+        .checkmark {
+            font-size: 60px;
+            color: green;
+            animation: pop 1s infinite alternate;
+        }
+
+        @@keyframes pop {
+            0%
+
+        {
+            transform: scale(1);
+        }
+
+        100% {
+            transform: scale(1.2);
+        }
+
+        }
+
+        .bill-details {
+            font-size: 20px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .thank-you {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+            .buttons button {
+                padding: 12px 20px;
+                border: none;
+                cursor: pointer;
+                font-size: 18px;
+                border-radius: 5px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+        .print-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .back-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .buttons button i {
+            font-size: 20px;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .confirmation-container
+
+        {
+            width: 95%;
+            padding: 20px;
+        }
+
+        table, th, td {
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        .buttons {
+            flex-direction: column;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-container">
+        <div class="checkmark">✅</div>
+        <div class="bill-details">Total Amount: <i class="fas fa-rupee-sign"></i> <span id="totalAmount">1250</span></div>
+        <div class="thank-you">Thank you for booking the slot! Our team will contact you soon.</div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Sl No</th>
+                    <th>Team Name</th>
+                    <th>Username</th>
+                    <th>Phone Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Cleaning Team A</td>
+                    <td>John Doe</td>
+                    <td>9876543210</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Sanitization Team B</td>
+                    <td>Jane Smith</td>
+                    <td>9123456789</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="buttons">
+            <button class="print-btn" onclick="printPage()"><i class="fas fa-print"></i> Print</button>
+            <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</button>
+        </div>
+    </div>
+
+    <script>
+        function printPage() {
+            window.print();
+        }
+        function goBack() {
+            window.location.href="../UserMaster/UserDashboard";
+        }
+    </script>
+</body>
+</html>

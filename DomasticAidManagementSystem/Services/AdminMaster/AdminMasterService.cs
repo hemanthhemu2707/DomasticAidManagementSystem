@@ -1,74 +1,95 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using DomasticAidManagementSystem.Models.AdminMaster;
+using DomasticAidManagementSystem.Models.Categories;
 
 namespace DomasticAidManagementSystem
 {
     public class AdminMasterService : IAdminMasterService
     {
 
-        private readonly IAdminMasterRepo adminMasterRepo;
+        private readonly IAdminMasterRepo _adminMasterRepo;
 
         public AdminMasterService(IAdminMasterRepo adminMasterRepo)
         {
-            this.adminMasterRepo = adminMasterRepo;
+            _adminMasterRepo = adminMasterRepo;
         }
 
-        public Task<bool> CheckIsEmailExist(string email)
+        public async Task<DashBoard> getCountDetails()
         {
-            throw new NotImplementedException();
+            var details = await _adminMasterRepo.getCountDetails();
+            return details;
         }
 
-        public Task<ExpenceCategory> DeleteExpenseCategory(int Category)
+        public async Task<DashBoard> AddCategoryMap(string categoryName)
         {
-            throw new NotImplementedException();
+            var details = await _adminMasterRepo.AddCategoryMap(categoryName);
+            return details;
         }
 
-        public Task<bool> DeleteUserById(int UserId, int? status)
+        public async Task<DashBoard> AddMainCategory(string categoryName)
         {
-            throw new NotImplementedException();
+            var details = await _adminMasterRepo.AddMainCategory(categoryName);
+            return details;
         }
 
-        public async Task<DashBoard> GetDashboardCountAdminDash()
+        public async Task<DashBoard> AddTeam(string teamName)
         {
-            var result = await adminMasterRepo.GetDashboardCountAdminDash();
-                return result;
+            var details = await _adminMasterRepo.AddTeam(teamName);
+            return details;
         }
 
-        public Task<DashBoard> GetDashboardCountAdminDash(int UserId)
+        public async Task<DashBoard> AddSubCategory(int categoryId, string subCategoryName, int uomId, decimal BasePrice)
         {
-            throw new NotImplementedException();
+            var details = await _adminMasterRepo.AddSubCategory(categoryId, subCategoryName, uomId, BasePrice);
+            return details;
         }
 
-        public Task<List<ExpenceCategory>> GetExpenseCategory()
+        public async Task<IEnumerable<Category>> GetCategories()
         {
-            throw new NotImplementedException();
+            var details = await _adminMasterRepo.GetCategories();
+            return details;
         }
 
-        public Task<List<FamilyRequest>> GetFamilyDetails(int UserId)
+        public async Task<IEnumerable<Team>> LoadTeams()
         {
-            throw new NotImplementedException();
+            var details = await _adminMasterRepo.LoadTeams();
+            return details;
         }
 
-        public Task<List<SelectListItem>> GetFamilyDetailsList()
+        public async Task<IEnumerable<Employee>> LoadEmployee()
         {
-            throw new NotImplementedException();
+            var details = await _adminMasterRepo.LoadEmployee();
+            return details;
         }
 
-        public Task<List<FamilyMemberDetails>> GetFamilyMembersDetails(int UserId)
+        public async Task<IEnumerable<UnitOfMeasure>> GetAllUom()
         {
-            throw new NotImplementedException();
+            var details = await _adminMasterRepo.GetAllUom();
+            return details;
         }
 
-        public Task<ExpenceCategory> SaveUpdateCategoryDetails(int categoryId, string categoryName, string categoryDescription)
+        public async Task<IEnumerable<SubCategory>> GetSubCategories(int categoryId)
         {
-            throw new NotImplementedException();
+          
+                var details = await _adminMasterRepo.GetSubCategories(categoryId);
+                return details;
+     
+         
         }
 
-        public Task<FamilyRequest> SaveUpdateFamilyDetails(FamilyRequest familyRequest)
+        public async Task<DashBoard> AddEmployee(Employee employee)
         {
-            throw new NotImplementedException();
+            var details = await _adminMasterRepo.AddEmployees(employee);
+            return details;
         }
 
-        public Task<FamilyMemberDetails> SaveUpdateFamilyMemberDetails(FamilyMemberDetails familyMemberDetails)
+
+        public async Task<DashBoard> UpdateSubCategory(int subCategoryId, int categoryId, string subCategoryName, int uomId, decimal BasePrice)
+        {
+            var details = await _adminMasterRepo.UpdateSubCategory(subCategoryId, categoryId, subCategoryName, uomId, BasePrice);
+            return details;
+        }
+
+        public Task<DashBoard> AddEmployees(Employee employee)
         {
             throw new NotImplementedException();
         }

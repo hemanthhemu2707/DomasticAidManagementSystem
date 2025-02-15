@@ -1,0 +1,247 @@
+﻿@{
+    Layout = "~/Views/Shared/_user_layouy.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            margin-top: 100px !important;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f9f9f9;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2, h3 {
+            text-align: center;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cart-summary {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .form-section {
+            padding: 10px;
+        }
+
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #28a745;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            button:hover {
+                background: #218838;
+            }
+
+        /* Order Success Animation */
+        .hidden {
+            display: none;
+        }
+
+        #orderSuccess {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            display:none;
+        }
+
+        .order-box {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @@keyframes fadeIn {
+            from
+
+        {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Your Cart</h2>
+        <div id="cartItems"></div>
+
+        <div class="cart-summary">
+            <h3>Total:  ₹<span id="totalPrice">0.00</span></h3>
+        </div>
+
+        <div class="form-section">
+            <label>Delivery Address:</label>
+            <textarea id="address" placeholder="Enter your delivery address"></textarea>
+
+            <label>Select Date & Time:</label>
+            <input type="datetime-local" id="deliveryDateTime">
+        </div>
+
+        <button id="placeOrder">Book Slot</button>
+    </div>
+
+    <div id="orderSuccess" class="hidden">
+        <div class="order-box">
+            <h2>✅ Order Placed Successfully!</h2>
+            <p>Thank you for your order. Your delivery is on the way! 🚀</p>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+                    $("#totalSection").hide();
+
+            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            if (!Array.isArray(cart)) cart = [];
+
+            function renderCart() {
+                let cartItemsContainer = $("#cartItems");
+                let total = 0;
+                let groupedItems = {};
+
+                // Group items by category
+                cart.forEach(item => {
+                    if (!groupedItems[item.category]) groupedItems[item.category] = [];
+                    groupedItems[item.category].push(item);
+                });
+
+                cartItemsContainer.html(""); // Clear old data
+
+                for (let category in groupedItems) {
+                    let categoryItems = groupedItems[category];
+                    let categoryBlock = $(`<div class="category-block"><h3 style="display:none" >${category}</h3></div>`);
+
+                    categoryItems.forEach(item => {
+                        let itemTotal = item.qty * item.price;
+                        total += itemTotal;
+
+                        let cartItem = $(`
+                            <div class="cart-item">
+                                <span>${item.name} (x${item.qty})</span>
+                                <span>₹${itemTotal.toFixed(2)}</span>
+                            </div>
+                        `);
+                        categoryBlock.append(cartItem);
+                    });
+
+                    cartItemsContainer.append(categoryBlock);
+                }
+
+                $("#totalPrice").text(total.toFixed(2));
+            }
+
+              function disableButton(button, text) {
+                        $(button).prop('disabled', true).html(`<span class="spinner-border spinner-border-sm"></span> ${text}`);
+                    }
+
+                    function enableButton(button, text) {
+                        $(button).prop('disabled', false).html(text);
+                    }
+
+        $("#placeOrder").click(function () {
+              var $button = $(this);
+            $button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Booking Your Slot...');
+
+            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            let address = $("#address").val().trim();
+            let deliveryDateTime = $("#deliveryDateTime").val();
+
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+
+            if (!address) {
+                alert("Please enter your address.");
+                return;
+            }
+
+            if (!deliveryDateTime) {
+                alert("Please select a delivery date & time.");
+                return;
+            }
+
+            let orderData = {
+                Address: address,
+                DeliveryDateTime: deliveryDateTime,
+                Items: cart
+            };
+
+            $.ajax({
+                url: "/UserMaster/PlaceOrder", // Ensure this matches your controller route
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(orderData),
+                success: function (response) {
+                    // alert("Booked successfully!");
+                    localStorage.removeItem("cart"); // Clear cart after sending data
+                    window.location.href = "/UserMaster/FinalSave?bookingId="+response.bookingId; // Redirect after sending
+                },
+                error: function (xhr, status, error) {
+                    alert("Error sending order.");
+                    console.error(error);
+                                        $button.prop('disabled', false).html('Login');
+                }
+            });
+        });
+
+            renderCart();
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+﻿@model DomasticAidManagementSystem.OrderMaster
+
+@{
+    Layout = "~/Views/Shared/_user_layouy.cshtml";
+    ViewData["Title"] = "Order Invoice";
+}
+<br />
+<div class="container mt-4">
+    <div class="invoice-box p-4 shadow-lg" style="background: white; border-radius: 10px;">
+        <h2 class="text-center mb-4">🧾 Invoice</h2>
+
+        <!-- Seller & Order Details -->
+        <div class="row">
+            <div class="col-md-6">
+                <h5><strong>Seller Details:</strong></h5>
+                <p>
+                    Domastic Aid Management System Pvt. Ltd.<br>
+                    123, Business Street, Mumbai, India<br>
+                    GSTIN: 27AABCT1234M1Z3<br>
+                    support@domasticaid.com
+                </p>
+            </div>
+            <div class="col-md-6 text-end">
+                <h5><strong>Order Details:</strong></h5>
+                <p>
+                    <strong>Order No:</strong> #@Model.OrderDetails.First().OrderNumber <br>
+                    <strong>Date:</strong> @Model.OrderDetails.First().OrderDate.ToString("dd MMM yyyy") <br>
+                </p>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Customer Details -->
+        <div class="mb-3">
+            <h5><strong>Billing Address:</strong></h5>
+            <p>
+            </p>
+        </div>
+
+        <!-- Itemized Table -->
+        <table class="table table-bordered">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>#</th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Price (₹)</th>
+                    <th>Total (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int index = 1;
+                    decimal subtotal = 0;
+                }
+                @foreach (var order in Model.OrderDetails)
+                {
+                    var itemTotal = order.Quantity * order.OrderAmount;
+                    subtotal += itemTotal;
+                    <tr>
+                        <td class="text-center">@index</td>
+                        <td>@order.SubCategoryName</td>
+                        <td>@order.CategoryName</td>
+                        <td class="text-center">@order.Quantity</td>
+                        <td class="text-end">@order.OrderAmount.ToString("0.00")</td>
+                        <td class="text-end">@itemTotal.ToString("0.00")</td>
+                    </tr>
+                    index++;
+                }
+            </tbody>
+        </table>
+
+        <!-- Total Calculation -->
+        <div class="row">
+            <div class="col-md-6"></div>
+            <div class="col-md-6">
+                <table class="table">
+                    <tr>
+                        <td><strong>Subtotal:</strong></td>
+                        <td class="text-end">₹@subtotal.ToString("0.00")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tax (18% GST):</strong></td>
+                        <td class="text-end">₹@((subtotal * 0.18M).ToString("0.00"))</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Grand Total:</strong></td>
+                        <td class="text-end"><strong>₹@((subtotal * 1.18M).ToString("0.00"))</strong></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="text-center mt-4">
+            <a href="@Url.Action("GeneratePDF", "UserMaster", new { orderId = Model.OrderDetails.First().OrderNumber })" class="btn btn-danger">
+                <i class="fas fa-download"></i> Download PDF
+            </a>
+            <button onclick="printBill()" class="btn btn-success">
+                <i class="fas fa-print"></i> Print Bill
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function printBill() {
+        window.print();
+    }
+</script>

@@ -1,506 +1,150 @@
-﻿@model DomasticAidManagementSystem.UserDashBoard
+﻿@model DomasticAidManagementSystem.DashBoard
 @using System.Text.Json;
 @{
     Layout = "~/Views/Shared/_user_layouy.cshtml";
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
 
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
         }
 
-        .card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .dashboard-container {
+            width: 100%;
+            max-width: 1400px; /* Increased max width */
+            margin: auto;
+            padding: 20px;
+        }
+
+        .title {
+            font-size: 28px; /* Bigger title */
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .welcome-message {
+            font-size: 20px; /* Bigger text */
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        .category-contain {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between; /* Ensure equal spacing */
+            gap: 20px;
+            padding: 10px;
+        }
+
+        .category-card {
+            background: #3498db;
+            color: white;
+            flex: 1 1 calc(30% - 20px); /* Make it wider with 3 per row */
+            min-width: 280px; /* Minimum width */
+            max-width: 400px; /* Maximum width */
+            padding: 25px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
             cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
 
-            .card:hover {
+            .category-card:hover {
                 transform: scale(1.05);
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
             }
 
-        .icon-container {
-            font-size: 2.5rem;
-            color: #007bff;
+        .category-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
         }
 
-        .card-title, .count-number {
-            font-size: 1.2rem;
+        .category-name {
+            font-size: 20px;
             font-weight: bold;
         }
 
-        .bar-chart-container {
-            height: 300px;
-            width: 100%;
-        }
-
-        .dropdowns-container {
-            margin-top: 20px;
-        }
-
-        .card {
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-            .card:hover {
-                transform: scale(1.05);
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            }
-        @@keyframes borderColorAnimation {
-            0%
-        {
-            border-color: #007bff;
-        }
-        25% {
-            border-color: #28a745;
-        }
-        50% {
-            border-color: #ffc107;
-        }
-
-        75% {
-            border-color: #dc3545;
-        }
-        100% {
-            border-color: #007bff;
-        }
-        }
-        .animated-border {
-            animation: borderColorAnimation 2s infinite;
-        }
-
-        .popup-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9999;
-        }
-
-        .popup-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%; /* Make it responsive */
-            max-width: 400px; /* Limit max width */
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-            .popup-content h3 {
-                font-size: 18px;
-                margin-bottom: 15px;
-            }
-
-        .date-pickers {
-            display: flex;
-            flex-wrap: wrap; /* Ensure flexibility on smaller screens */
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-            .date-pickers .from-date,
-            .date-pickers .to-date {
-                flex: 1; /* Ensure fields share space equally */
-                min-width: 45%; /* Prevent input fields from being too small */
-            }
-
-        .popup-content input[type="date"] {
-            width: 100%; /* Full width for inputs */
-            padding: 10px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-top: 5px;
-        }
-
-        .popup-content button.go-btn {
-            background: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            padding: 10px 20px;
-            font-size: 16px;
-            width: 100%; /* Full width for button */
-            margin-top: 15px;
-        }
-
-            .popup-content button.go-btn:hover {
-                background: #0056b3;
-            }
-
-        /* Media Query for Smaller Screens */
-        @@media (max-width: 480px) {
-            .popup-content
-
-        {
-            padding: 15px;
-        }
-
-        .popup-content h3 {
-            font-size: 16px;
-        }
-
-        .date-pickers .from-date,
-        .date-pickers .to-date {
-            min-width: 100%; /* Stack fields vertically */
-        }
-
-        .popup-content button.go-btn {
-            font-size: 14px;
-            padding: 10px;
-        }
-
-        }
-
-
-        .card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-
-            .card:hover {
-                transform: scale(1.05);
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            }
-
-        .icon-container {
-            font-size: 2.5rem;
-            color: #007bff;
-        }
-
-        .card-title, .count-number {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .bar-chart-container {
-            height: 300px;
-            width: 100%;
-        }
-
-        .dropdowns-container {
-            margin-top: 20px;
-        }
-
-        .card {
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-            .card:hover {
-                transform: scale(1.05);
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            }
-
-        @@keyframes borderColorAnimation {
-            0% {
-                border-color: #007bff;
-            }
-
-            25% {
-                border-color: #28a745;
-            }
-
-            50% {
-                border-color: #ffc107;
-            }
-
-            75% {
-                border-color: #dc3545;
-            }
-
-            100% {
-                border-color: #007bff;
-            }
-        }
-
-        .animated-border {
-            animation: borderColorAnimation 2s infinite;
-        }
-
-        .popup-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9999;
-        }
-
-        .popup-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%; /* Make it responsive */
-            max-width: 400px; /* Limit max width */
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-            .popup-content h3 {
-                font-size: 18px;
-                margin-bottom: 15px;
-            }
-
-        .date-pickers {
-            display: flex;
-            flex-wrap: wrap; /* Ensure flexibility on smaller screens */
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-            .date-pickers .from-date,
-            .date-pickers .to-date {
-                flex: 1; /* Ensure fields share space equally */
-                min-width: 45%; /* Prevent input fields from being too small */
-            }
-
-        .popup-content input[type="date"] {
-            width: 100%; /* Full width for inputs */
-            padding: 10px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-top: 5px;
-        }
-
-        .popup-content button.go-btn {
-            background: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            padding: 10px 20px;
-            font-size: 16px;
-            width: 100%; /* Full width for button */
-            margin-top: 15px;
-        }
-
-            .popup-content button.go-btn:hover {
-                background: #0056b3;
-            }
-
-        /* Media Query for Smaller Screens */
-        @@media (max-width: 480px) {
-            .popup-content {
-                padding: 15px;
-            }
-
-                .popup-content h3 {
-                    font-size: 16px;
-                }
-
-            .date-pickers .from-date,
-            .date-pickers .to-date {
-                min-width: 100%; /* Stack fields vertically */
-            }
-
-            .popup-content button.go-btn {
-                font-size: 14px;
-                padding: 10px;
-            }
-        }
     </style>
 </head>
 <body>
-   
-        <div class="container py-4">
-@*         <div class="text-center mb-4">
-            <h3>Welcome, @Model.UserName !</h3>
-            <h3><b>"@Model.FamilyName</b>"</h3>
-            <h5 class="text-muted">Your Expense on this Current Month</h5>
-            <div class="row mt-3">
-                <div class="col-6">
-                    <div class="card p-3 shadow-sm" style="border-width:2px !important;">
-                        <h5 class="card-title">Personal Expense</h5>
-                        <p class="count-number">
-                            <span class="rs-icon">₹</span>
-                            <span id="personal-expense-count">0</span>
-                        </p>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="card p-3 shadow-sm">
-                        <h5 class="card-title">Family Expense</h5>
-                        <p class="count-number">
-                            <span class="rs-icon">₹</span>
-                            <span id="family-expense-count">0</span>
-                        </p>
-                    </div>
-                </div>
-              
+    <br />
+    <br />
+    <br />
+    <div class="dashboard-container">
+        <div class="title">Welcome to the Domestic Aid Management System</div>
+        <div class="welcome-message">Welcome, @Context.Session.GetString("UserName")</div>
 
-            </div>
-        </div>
-        <br>
- *@  
- <div class="row mb-4">
-            <div class="col-md-12 text-center">
-
-                <h2 class="card-title">Welcome @Context.Session.GetString("UserId")</h2>
-                       
-            </div>
-            <div class="col-md-4">
-                <a href="../UserMaster/AddExpence" class="text-decoration-none">
-                    <div class="card p-3 shadow-sm text-center">
-                        <div class="icon-container mb-2">
-                            <i class="fas fa-chart-bar"></i>
-                        </div>
-                        <h5 class="card-title">Order Details</h5>
-                        <p class="count-number">
-                            <span class="rs-icon">Count:</span>
-                            <span id="personal-expense-count">0</span>
-                        </p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a href="../UserMaster/AddExpence" class="text-decoration-none">
-                    <div class="card p-3 shadow-sm text-center">
-                        <div class="icon-container mb-2">
-                            <i class="fas fa-chart-bar"></i>
-                        </div>
-                        <h5 class="card-title">View History</h5>
-                        <p class="count-number">
-                            <span class="rs-icon">Count:</span>
-                            <span id="family-expense-count">0</span>
-                        </p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a href="#"  class="text-decoration-none">
-                    <div class="card p-3 shadow-sm text-center">
-                        <div class="icon-container mb-2">
-                            <i class="fas fa-download"></i>
-                        </div>
-                        <h5 class="card-title">Generate Bill</h5>
-                        <p class="count-number">
-                            <span class="rs-icon">Count:</span>
-                            <span id="family-expense-count">0</span>
-                        </p>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <!-- Bar Chart Section -->
-        <div class="mt-4">
-            <canvas id="bar-chart" class="bar-chart-container"></canvas>
+        <div class="category-contain" id="categorys">
+            <!-- Categories will be loaded here dynamically -->
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-
-
         $(document).ready(function () {
-                       const personalExpense =52;
-                                              const familyExpense =52;
+            $.ajax({
+                url: '/AdminMaster/GetCategories',
+                type: 'GET',
+                success: function (categories) {
+                    console.log(categories)
+                    var categoryList = $("#categorys");
+                    categoryList.empty();
+                    debugger
+                    categories.forEach(category => {
+                        let iconClass = getCategoryIcon(category.categoryName);
 
-            const familyMembersCount = 1100;
-            const currentYear = new Date().getFullYear();
-            const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+                        categoryList.append(`
+                            <div class="category-card category-item" data-id="${category.categoryId}">
+                                <i class="${iconClass} category-icon"></i>
+                                <div class="category-name">${category.categoryName}</div>
+                            </div>
+                        `);
+                    });
 
-               function animateCounter(id, start, end, duration, callback) {
-            const element = $(`#${id}`);
-            let current = start;
-            const increment = (end - start) / (duration / 10);
-            const interval = setInterval(() => {
-                current += increment;
-                if (current >= end) {
-                    current = end;
-                    clearInterval(interval);
-                    if (callback) callback(); // Execute callback after animation completes
+                    $(".category-item").click(function () {
+                        var categoryId = $(this).data("id");
+                        window.location.href = "/UserMaster/MainContent?categoryId=" + categoryId;
+                    });
+                },
+                error: function () {
+                    alert("Error loading categories.");
                 }
-                element.text(Math.floor(current));
-            }, 10);
-        }
-        animateCounter("personal-expense-count", 0, personalExpense, 2000, () => {
-            $("#personal-expense-count").closest(".card").addClass("animated-border");
-        });
-        animateCounter("family-expense-count", 0, familyExpense, 2000, () => {
-            $("#family-expense-count").closest(".card").addClass("animated-border");
-        });
-        animateCounter("family-members-count", 0, familyMembersCount, 2000);
-        for (let i = currentYear - 10; i <= currentYear + 10; i++) {
-            $('#year-select').append(new Option(i, i));
-        }
-        $('#year-select').val(currentYear);
-        const months = [
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-        ];
-        months.forEach(month => $('#month-select').append(new Option(month, month)));
-        $('#month-select').val(currentMonth);
-               const ctx = document.getElementById('bar-chart').getContext('2d');
-        const labels = monthlyData.map(d => d.Month);
+            });
 
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Personal Expense',
-                        data: personalExpenses,
-                        backgroundColor: 'rgba(0, 123, 255, 0.5)',
-                        borderColor: '#007bff',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Family Expense',
-                        data: familyExpenses,
-                        backgroundColor: 'rgba(40, 167, 69, 0.5)',
-                        borderColor: '#28a745',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+            function getCategoryIcon(categoryName) {
+                let icons = {
+                    "Home": "fas fa-home",
+                    "Industries": "fas fa-industry",
+                    "Apartments": "fas fa-building",
+                    "Electronics": "fas fa-laptop",
+                    "Clothing": "fas fa-tshirt",
+                    "Furniture": "fas fa-couch",
+                    "Books": "fas fa-book",
+                    "Groceries": "fas fa-shopping-basket",
+                    "Sports": "fas fa-football-ball",
+                    "Accessories": "fas fa-watch"
+                };
+
+                return icons[categoryName] || "fas fa-list";
             }
         });
-
-        $('#year-select, #month-select').on('change', function () {
-            console.log($('#year-select').val(), $('#month-select').val());
-        });
-        });
     </script>
+
 </body>
 </html>

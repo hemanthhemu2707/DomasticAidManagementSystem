@@ -22,6 +22,7 @@ builder.Services.AddScoped<ILoginRepo, LoginRepo>();
 builder.Services.AddScoped<IAdminMasterService, AdminMasterService>();
 builder.Services.AddScoped<IAdminMasterRepo, AdminMasterRepo>();
 builder.Services.AddScoped<IUserMasterService, UserMasterService>();
+builder.Services.AddScoped<IUserMasterRepo, UserMasterRepo>();
 
 //builder.Services.AddTransient<LoginDBTypes>();
 builder.Services.AddTransient<EmailService>();

@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Category and UOM Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background: #f4f4f4;
+        }
+
+        .card {
+            transition: 0.3s;
+            border-radius: 15px;
+        }
+
+            .card:hover {
+                transform: scale(1.05);
+                box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+            }
+
+        .category-box {
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s;
+            background: #ffffff;
+        }
+
+            .category-box:hover {
+                background: #007bff;
+                color: white;
+            }
+
+        .selected {
+            background: #007bff !important;
+            color: white !important;
+        }
+
+        .save-btn {
+            transition: all 0.3s;
+        }
+
+            .save-btn:hover {
+                transform: translateY(-3px);
+            }
+    </style>
+</head>
+<body>
+
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Admin - Category, Subcategory, and UOM Management</h2>
+
+        <div class="row">
+            <!-- Main Category Form -->
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5>Add Main Category</h5>
+                    <input type="text" class="form-control mb-2" id="mainCategory" placeholder="Enter Main Category">
+                    <select id="mainCategoryUOM" class="form-control mb-2">
+                        <option value="">Select Unit of Measure</option>
+                        <!-- UOM options will be populated dynamically -->
+                    </select>
+                    <button class="btn btn-primary save-btn w-100" onclick="addCategory()">Save Category</button>
+                </div>
+            </div>
+
+            <!-- SubCategory Form -->
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5>Add Sub Category</h5>
+                    <select id="categorySelect" class="form-control mb-2">
+                        <option value="">Select Main Category</option>
+                    </select>
+                    <input type="text" class="form-control mb-2" id="subCategory" placeholder="Enter SubCategory">
+                    <select id="subCategoryUOM" class="form-control mb-2">
+                        <option value="">Select Unit of Measure</option>
+                        <!-- UOM options will be populated dynamically -->
+                    </select>
+                    <button class="btn btn-success save-btn w-100" onclick="addSubCategory()">Save SubCategory</button>
+                </div>
+            </div>
+
+            <!-- Category Mapping -->
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5>Map Categories</h5>
+                    <select id="mapCategorySelect" class="form-control mb-2">
+                        <option value="">Select Main Category</option>
+                    </select>
+                    <select id="mapSubCategorySelect" class="form-control mb-2">
+                        <option value="">Select SubCategory</option>
+                    </select>
+                    <select id="mapUOMSelect" class="form-control mb-2">
+                        <option value="">Select Unit of Measure</option>
+                    </select>
+                    <button class="btn btn-warning save-btn w-100" onclick="mapCategories()">Map Categories</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Display Categories -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h4>Main Categories</h4>
+                <div id="categoryList" class="row"></div>
+            </div>
+            <div class="col-md-6">
+                <h4>Mapped Sub Categories</h4>
+                <div id="subCategoryList" class="row"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            loadCategories();
+            loadUOMOptions();  // Load Unit of Measure options on page load
+        });
+
+        // Function to Load UOM Options
+        function loadUOMOptions() {
+            $.get("/UOM/GetAll", function (data) {
+                $('#mainCategoryUOM, #subCategoryUOM, #mapUOMSelect').empty().append('<option value="">Select Unit of Measure</option>');
+                data.forEach(uom => {
+                    $('#mainCategoryUOM, #subCategoryUOM, #mapUOMSelect').append(`<option value="${uom.id}">${uom.name}</option>`);
+                });
+            });
+        }
+
+        // Function to Add Main Category
+        function addCategory() {
+            let categoryName = $("#mainCategory").val();
+            let uomId = $("#mainCategoryUOM").val();
+            if (categoryName.trim() === "" || !uomId) {
+                alert("Enter category name and select UOM!");
+                return;
+            }
+            $.post("/Category/AddCategory", { categoryName: categoryName, uomId: uomId }, function () {
+                $("#mainCategory").val("");
+                loadCategories();
+            });
+        }
+
+        // Function to Load Categories
+        function loadCategories() {
+            $.get("/Category/GetCategories", function (data) {
+                let categorySelect = $("#categorySelect, #mapCategorySelect");
+                let categoryList = $("#categoryList");
+                categorySelect.empty().append('<option value="">Select Main Category</option>');
+                categoryList.empty();
+                data.forEach(category => {
+                    categorySelect.append(`<option value="${category.id}">${category.name}</option>`);
+                    categoryList.append(`<div class="col-md-4">
+                        <div class="category-box" onclick="selectCategory(${category.id})">${category.name}</div>
+                    </div>`);
+                });
+            });
+        }
+
+        // Function to Add SubCategory
+        function addSubCategory() {
+            let categoryId = $("#categorySelect").val();
+            let subCategoryName = $("#subCategory").val();
+            let uomId = $("#subCategoryUOM").val();
+            if (!categoryId || subCategoryName.trim() === "" || !uomId) {
+                alert("Select category, enter subcategory, and select UOM!");
+                return;
+            }
+            $.post("/Category/AddSubCategory", { categoryId, subCategoryName, uomId }, function () {
+                $("#subCategory").val("");
+                loadSubCategories(categoryId);
+            });
+        }
+
+        // Function to Load SubCategories
+        function loadSubCategories(categoryId) {
+            $.get("/Category/GetSubCategories?categoryId=" + categoryId, function (data) {
+                let subCategorySelect = $("#mapSubCategorySelect");
+                let subCategoryList = $("#subCategoryList");
+                subCategorySelect.empty().append('<option value="">Select SubCategory</option>');
+                subCategoryList.empty();
+                data.forEach(subCategory => {
+                    subCategorySelect.append(`<option value="${subCategory.id}">${subCategory.name}</option>`);
+                    subCategoryList.append(`<div class="col-md-4">
+                        <div class="category-box">${subCategory.name}</div>
+                    </div>`);
+                });
+            });
+        }
+
+        // Function to Map Categories
+        function mapCategories() {
+            let categoryId = $("#mapCategorySelect").val();
+            let subCategoryId = $("#mapSubCategorySelect").val();
+            let uomId = $("#mapUOMSelect").val();
+            if (!categoryId || !subCategoryId || !uomId) {
+                alert("Select both category, subcategory, and UOM!");
+                return;
+            }
+            $.post("/Category/MapCategories", { categoryId, subCategoryId, uomId }, function () {
+                alert("Mapped successfully!");
+            });
+        }
+
+        // Function to Select a Category and Load SubCategories
+        function selectCategory(categoryId) {
+            $(".category-box").removeClass("selected");
+            $(`[onclick="selectCategory(${categoryId})"]`).addClass("selected");
+            loadSubCategories(categoryId);
+        }
+    </script>
+
+</body>
+</html>

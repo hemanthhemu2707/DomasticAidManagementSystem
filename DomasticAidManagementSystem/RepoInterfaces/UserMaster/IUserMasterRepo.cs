@@ -3,9 +3,9 @@ using System.Text.Json;
 
 namespace DomasticAidManagementSystem
 {
-    public interface IUserMasterService
+    public interface IUserMasterRepo
     {
-        public Task<CategoryViewModel> GetMainContent(int categoryId);
+        Task<CategoryViewModel> GetMainContent(int categoryId);
         Task<DashBoard> SaveOrderDetails(JsonElement order, int userID);
         Task<OrderMaster> GetOrderDetails(string userID);
         Task<OrderMaster> GetOrderDetailForBill(int orderId);

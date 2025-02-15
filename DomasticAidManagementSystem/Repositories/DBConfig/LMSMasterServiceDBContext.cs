@@ -1,9 +1,7 @@
-﻿using DomasticAidManagementSystem.Repositories.DBConfig.Admin;
-using DomasticAidManagementSystem.Repositories.DBConfig.BookingDetails;
-using DomasticAidManagementSystem.Repositories.DBConfig.Bookings;
+﻿using DomasticAidManagementSystem.Repositories.DBConfig;
+using DomasticAidManagementSystem.Repositories.DBConfig.DomasticDb;
 using DomasticAidManagementSystem.Repositories.DBConfig.Login;
-using DomasticAidManagementSystem.Repositories.DBConfig.Pricing;
-using DomasticAidManagementSystem.Repositories.DBConfig.Services;
+using DomasticAidManagementSystem.Repositories.DBConfig.Order;
 using Microsoft.EntityFrameworkCore;
 
 namespace IIITS.EFCore.Repositories
@@ -36,18 +34,23 @@ namespace IIITS.EFCore.Repositories
 		{
 			string schemaNme = _configuration["APIDBContext:SchemaName"];
             modelBuilder.ApplyConfiguration(new UserTableConfiguration(schemaNme));
-            modelBuilder.ApplyConfiguration(new ServicesTableConfiguration(schemaNme));
-            modelBuilder.ApplyConfiguration(new PricingTableConfiguration(schemaNme));
-            modelBuilder.ApplyConfiguration(new BookingsTableConfiguration(schemaNme));
-            modelBuilder.ApplyConfiguration(new BookingDetailsTableConfiguration(schemaNme));
-            modelBuilder.ApplyConfiguration(new AdminsTableConfiguration(schemaNme));
+            modelBuilder.ApplyConfiguration(new CategoryConfiguration(schemaNme));
+            modelBuilder.ApplyConfiguration(new SubCategoryConfiguration(schemaNme));
+            modelBuilder.ApplyConfiguration(new UnitOfMeasureConfiguration(schemaNme));
+            modelBuilder.ApplyConfiguration(new OrderDetailsTableConfiguration(schemaNme));
+            modelBuilder.ApplyConfiguration(new OrdersTableConfiguration(schemaNme));
+            modelBuilder.ApplyConfiguration(new EmployeeTableConfiguration(schemaNme));
+            modelBuilder.ApplyConfiguration(new TeamTableConfiguration(schemaNme));
             base.OnModelCreating(modelBuilder);
 		}
         public DbSet<UsersTableDBType> Users { get; set; }
-        public DbSet<ServicesTableDBType> Services { get; set; }
-        public DbSet<PricingTableDBType> Pricing { get; set; }
-        public DbSet<BookingsTableDBType> Bookings { get; set; }
-        public DbSet<BookingDetailsTableDBType> BookingDetails { get; set; }
-        public DbSet<AdminsTableDBType> Admins { get; set; }
+        public DbSet<CategoryDbType> Categories { get; set; }
+        public DbSet<SubCategoryDbType> SubCategories { get; set; }
+        public DbSet<UnitOfMeasureDbType> UnitOfMeasures { get; set; }
+        public DbSet<OrdersTableDBType> Orders { get; set; }
+        public DbSet<OrderDetailsTableDBType> OrderDetails { get; set; }
+        public DbSet<CategoryMappingDbType> CategoryMappings { get; set; }
+        public DbSet<EmployeeDbType> Employees { get; set; }
+        public DbSet<TeamDbType> Teams { get; set; }
     }
 }

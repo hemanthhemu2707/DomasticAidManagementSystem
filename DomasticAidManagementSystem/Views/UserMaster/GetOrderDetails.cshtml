@@ -1,0 +1,64 @@
+﻿@model DomasticAidManagementSystem.OrderMaster
+
+@{
+    Layout = "~/Views/Shared/_user_layouy.cshtml";
+}
+
+<h2 class="text-center text-primary">Order Details</h2>
+
+<div class="container mt-4">
+    <table id="orderTable" class="table table-bordered table-striped shadow-lg">
+        <thead class="bg-primary text-white">
+            <tr>
+                <th>Order Number</th>
+                <th>Order Date</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Order Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.OrderDetails != null)
+            {
+                @foreach (var order in Model.OrderDetails)
+                {
+                    <tr>
+                        <td>@order.OrderNumber</td>
+                        <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
+                        <td>@order.CategoryName</td>
+                        <td>@order.Quantity</td>
+                        <td>@order.OrderAmount.ToString("C")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="5" class="text-center">No Orders Found</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#orderTable').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "responsive": true,
+                "language": {
+                    "search": "Search Order:"
+                }
+            });
+
+            $("tr").hover(function () {
+                $(this).css("background-color", "#f0f8ff");
+            }, function () {
+                $(this).css("background-color", "");
+            });
+        });
+    </script>
+}

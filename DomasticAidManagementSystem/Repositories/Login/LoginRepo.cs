@@ -51,6 +51,7 @@ namespace DomasticAidManagementSystem
                         Email = user.Email,
                         Status = 1,
                         Role=user.Role,
+                        Phone=user.Phone,
                         StatusMessage = "Login Successful"
                     };
                 }
@@ -73,14 +74,8 @@ namespace DomasticAidManagementSystem
         }
         }
 
-
-
-
-
-
         public async Task<User> RegisterNewUser(User request)
         {
-
             try
             {
                 var userDbType = new UsersTableDBType

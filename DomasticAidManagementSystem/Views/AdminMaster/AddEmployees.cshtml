@@ -1,0 +1,234 @@
+﻿@{
+    Layout = "~/Views/Shared/_admin_layouy.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Category Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background: #f4f4f4;
+        }
+
+        .card {
+            transition: 0.3s;
+            border-radius: 15px;
+        }
+
+            .card:hover {
+                transform: scale(1.05);
+                box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+            }
+
+        .edit-mode {
+            background: #ffc107 !important;
+            color: black !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Admin - Team and Employee Management</h2>
+
+        <div class="row">
+            <!-- Main Category Form -->
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5 id="categoryFormTitle">Add Team</h5>
+                    <input type="hidden" id="teamId" />
+                    <input type="text" class="form-control mb-2" id="teamName" placeholder="Enter Main Category">
+                    <button class="btn btn-primary save-btn w-100" onclick="saveTeam()" id="saveCategoryBtn">Save</button>
+                </div>
+            </div>
+
+            <!-- SubCategory Form -->
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5>Add  Employees</h5>
+                    <select id="teamSelect" class="form-control mb-2">
+                        <option value="">Select Team</option>
+                    </select>
+                    <input type="text" class="form-control mb-2" id="empName" placeholder="Enter Employee Name">
+                    <input type="text" class="form-control mb-2" id="empPhoneNumber" placeholder="Enter Employee Phone Number">
+                    <input type="text" class="form-control mb-2" id="aadharNumber" placeholder="Enter Employee Aadhar Number">
+                    <button class="btn btn-success update-btn w-100" onclick="updateSubCategory()">Update Employee Details</button>
+                    <button class="btn btn-success save-btn w-100" onclick="addEmployeeCategory()">Save Employee</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Display Categories -->
+        <div class="row mt-4">
+            <h4>Team</h4>
+            <div id="categoryList" class="row"></div>
+        </div>
+
+        <!-- Display SubCategories -->
+        <div class="row mt-4">
+            <h4>Employees</h4>
+            <div id="subCategoryList" class="row"></div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+
+            $('.update-btn').hide();
+            loadTeam();
+            loadUOMOptions();
+            loadEmployees();
+        });
+
+        // Function to Load UOM Options
+        function loadUOMOptions() {
+            $.get("/AdminMaster/GetAllUom", function (data) {
+                $('#subCategoryUOM').empty().append('<option value="">Select Unit of Measure</option>');
+                data.forEach(uom => {
+                    $('#subCategoryUOM').append(`<option value="${uom.unitId}">${uom.unitName}</option>`);
+                });
+            });
+        }
+
+        function saveTeam() {
+            let categoryId = $("#teamId").val();
+            let categoryName = $("#teamName").val().trim();
+            if (!categoryName) { alert("Enter Team name!"); return; }
+
+            let url = categoryId ? "/AdminMaster/UpdateTeam" : "/AdminMaster/AddTeam";
+            let data = { categoryId, categoryName };
+
+            $.post(url, data, function () {
+                $("#categoryId").val("");
+                $("#addTeam").val("");
+                $("#saveCategoryBtn").text("Save").removeClass("btn-warning").addClass("btn-primary");
+                $("#categoryFormTitle").text("Add Main Category");
+                loadTeam();
+            });
+        }
+
+        function loadTeam() {
+            $.get("/AdminMaster/LoadTeams", function (data) {
+                let categorySelect = $("#teamSelect");
+                let categoryList = $("#categoryList");
+                categorySelect.empty().append('<option value="">Select Main Category</option>');
+                categoryList.empty();
+                data.forEach(category => {
+                    categorySelect.append(`<option value="${category.teamId}">${category.teamName}</option>`);
+                    categoryList.append(`<div class="col-md-4">
+                        <div class="card p-3 text-center">
+                            <h5>${category.teamName}</h5>
+                        </div>
+                    </div>`);
+                                                // <button class="btn btn-sm btn-warning" onclick="editCategory(${category.teamId}, '${category.teamName}')">Edit</button>
+
+                });
+            });
+        }
+
+        function editCategory(id, name) {
+            $("#categoryId").val(id);
+            $("#addTeam").val(name);
+            $("#saveCategoryBtn").text("Update").removeClass("btn-primary").addClass("btn-warning");
+            $("#categoryFormTitle").text("Edit Category");
+        }
+
+        function addEmployeeCategory() {
+            let teamSelect = $("#teamSelect").val();
+            let employeeName = $("#empName").val().trim();
+            let empPhoneNumber = $("#empPhoneNumber").val();
+            let empAadharNumber = $("#aadharNumber").val().trim();
+
+            if (!teamSelect || !employeeName || !empPhoneNumber || !empAadharNumber) {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            let data = {
+                EmpTeamId: teamSelect,
+                EmpName: employeeName,
+                EmpPhoneNumber: empPhoneNumber,
+                EmpAadharNumber: empAadharNumber
+            };
+
+            $.post("/AdminMaster/AddEmployees", data, function () {
+                $("#empName").val("");
+                $("#empPhoneNumber").val("");
+                $("#aadharNumber").val("");
+                loadEmployees();
+            });
+        }
+
+        function loadEmployees() {
+            $.get("/AdminMaster/LoadEmployee", function (data) {
+                let subCategorySelect = $("#subCategoryList");
+                                                subCategorySelect.empty().append('<option value="">Select SubCategory</option>');
+              console.log(data)
+                                                subCategorySelect.empty();
+                data.forEach(subCategory => {
+                                        subCategorySelect.append(`<option value="${subCategory.empId}">${subCategory.empName}</option>`);
+                    subCategorySelect.append(`<div class="col-md-4">
+                        <div class="card p-3 text-center">
+                            <h5>${subCategory.empName}</h5>
+                            <p>Phone Number: ${subCategory.empPhoneNumber}</p>
+                            <p>Aadhar Number: ${subCategory.empAadharNumber}</p>
+                        </div>
+                    </div>`);
+                                                // <button class="btn btn-sm btn-warning" onclick="editSubCategory(${subCategory.subCategoryId}, '${subCategory.subCategoryName}', ${subCategory.categoryId}, ${subCategory.uomId}, ${subCategory.basePrice})">Edit</button>
+
+                });
+            });
+        }
+
+               function editSubCategory(id, name, categoryId, uomId, basePrice) {
+            $("#subCategory").val(name);
+            $("#categorySelect").val(categoryId);
+            $("#subCategoryUOM").val(uomId);
+            $("#BasePrice").val(basePrice);
+            $("#subCategory").data("subCategoryId", id);
+            $(".update-btn").show();
+            $(".save-btn").hide();
+            $(".update-btn").text("Update SubCategory").removeClass("btn-success").addClass("btn-warning").off("click").on("click", updateSubCategory);
+        }
+
+        function updateSubCategory() {
+            let subCategoryId = $("#subCategory").data("subCategoryId");
+            let categoryId = $("#categorySelect").val();
+            let subCategoryName = $("#subCategory").val().trim();
+            let uomId = $("#subCategoryUOM").val();
+            let basePrice = $("#BasePrice").val().trim();
+
+            if (!categoryId || !subCategoryName || !uomId || !basePrice) {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            let data = {
+                subCategoryId: subCategoryId,
+                categoryId: categoryId,
+                subCategoryName: subCategoryName,
+                uomId: uomId,
+                basePrice: basePrice
+            };
+
+            $.post("/AdminMaster/UpdateSubCategory", data, function () {
+                $("#subCategory").val("");
+                $("#categorySelect").val("");
+                $("#subCategoryUOM").val("");
+                $("#BasePrice").val("");
+                     $(".update-btn").hide();
+            $(".save-btn").show();
+                // Reset button to "Save SubCategory"
+                $(".save-btn").text("Save SubCategory").removeClass("btn-warning").addClass("btn-success").off("click").on("click", addSubCategory);
+
+                loadEmployees();
+            });
+        }
+
+    </script>
+</body>
+</html>
